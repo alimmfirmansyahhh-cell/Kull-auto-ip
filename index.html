@@ -95,18 +95,12 @@ html:not(.dark) .cr-user{color:#6d28d9;background:rgba(139,92,246,.08)}
 .cr-line b{color:var(--ink);font-weight:700}
 .cr-line .k{color:var(--muted-2);font-family:ui-monospace,monospace;font-size:11px;margin-right:6px}
 .cr-err{font-size:12px;color:var(--danger);margin-top:10px;padding:9px 12px;background:rgba(251,113,133,.08);border-radius:9px;border:1px solid rgba(251,113,133,.22)}
-.cr-actions{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
 .summary-box{background:var(--code-bg);border:1px solid var(--border);border-radius:14px;padding:14px 16px;margin-bottom:14px}
 .summary-top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
 .summary-ip{font-size:14px;font-weight:900;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .summary-badges{display:flex;gap:6px;flex-wrap:wrap}
 .summary-stats{font-size:12px;color:var(--muted);margin-top:10px}
 .summary-stats b{color:var(--ink);font-weight:800}
-details.attempts{margin-top:14px;border-top:1px solid var(--border);padding-top:12px}
-details.attempts summary{cursor:pointer;font-size:12px;font-weight:800;color:var(--muted);list-style:none;padding:4px 0}
-details.attempts summary::-webkit-details-marker{display:none}
-details.attempts summary::before{content:"▸ ";transition:transform .15s;display:inline-block;margin-right:4px}
-details.attempts[open] summary::before{transform:rotate(90deg)}
 .codebox{background:rgba(10,11,18,.55);border:1px solid var(--border);border-radius:15px;padding:16px 18px;margin:16px 0;font-family:ui-monospace,Menlo,monospace;font-size:12.5px;line-height:1.85;word-break:break-all;white-space:pre-wrap;color:#a5f3fc}
 html:not(.dark) .codebox{background:rgba(13,18,38,.04);color:#0e7490}
 .codebox .k{color:var(--muted-2);display:inline-block;min-width:88px}
@@ -151,7 +145,7 @@ html:not(.dark) .codebox{background:rgba(13,18,38,.04);color:#0e7490}
 
   <span class="kicker"><span class="dot"></span>LIMZXCM PROJECT · DATAIMPULSE</span>
   <h1 class="hero">IP jadi <span class="hl grad-text">username</span>,<br>sekejap.</h1>
-  <p class="sub">Tempel IP, dapatkan username DataImpulse dengan kode negara otomatis — plus tes proxy cascade sampai ketemu match terbaik.</p>
+  <p class="sub">Tempel IP, dapatkan username DataImpulse dengan kode negara otomatis — plus tes proxy cascade dengan anti-503.</p>
 
   <!-- AKUN -->
   <section id="setupCard" class="card highlight">
@@ -226,14 +220,14 @@ html:not(.dark) .codebox{background:rgba(13,18,38,.04);color:#0e7490}
       <label class="fl" style="margin-top:14px">IP target untuk diuji (satu per baris)</label>
       <textarea id="checkerIps" class="g-input mono" spellcheck="false" placeholder="103.129.68.37&#10;8.8.8.8"></textarea>
       <div class="opts">
-        <label class="chk"><input type="checkbox" id="chkRetry"> Retry 2× per varian</label>
-        <label class="chk"><input type="checkbox" id="chkNoWaterfall"> Uji semua varian (tanpa stop)</label>
+        <label class="chk on"><input type="checkbox" id="chkFast" checked> ⚡ Fast mode (1 varian FULL)</label>
+        <label class="chk"><input type="checkbox" id="chkRetry"> Retry agresif (anti 503)</label>
       </div>
       <div style="display:flex;gap:10px;flex-wrap:wrap">
         <button id="runCheck" class="g-btn accent">🔍 Cek Proxy Sekarang</button>
         <button id="stopCheck" class="g-btn stop" style="display:none">⏹ Stop</button>
       </div>
-      <p class="note" style="margin-top:14px">💡 Cascade: coba dari yang paling spesifik (FULL+ZIP+ASN) → paling umum (COUNTRY only). Stop begitu match score ≥ 80%.</p>
+      <p class="note" style="margin-top:14px">💡 <b>Fast mode</b>: persis auto-ip — kirim 1 request FULL+ZIP, hasil paling akurat &amp; cepat. <b>Uncheck</b>: cascade 6 varian dengan jeda 700ms antar varian (anti 503).</p>
       <div id="checkerResults"></div>
     </div>
   </section>
@@ -304,7 +298,7 @@ function renderCheckerState(){
   $('#checkerBody').style.display=has?'block':'none';
   $('#checkerHint').innerHTML=has?'Kunci akses terpasang ✓ — tempel IP target di bawah, klik Cek Proxy.':'Masukkan username & password DataImpulse dulu untuk mengaktifkan checker.';
   $('#checkerStatus').style.display=has?'block':'none';
-  $('#checkerStatus').innerHTML=has?'<div class="status-line"><span class="checkmark">✓</span><span>Kunci akses sudah terpasang</span></div>':'';
+  $('#checkerStatus').innerHTML=has?'<div class="status-line"><span>✓</span><span>Kunci akses sudah terpasang</span></div>':'';
 }
 
 /* IP PARSING */
@@ -412,7 +406,7 @@ function buildVariants(base, geo){
     { id:'full-zip',  name:'FULL + ZIP (Region+City+ZIP+ASN)', params:[['cr',geo.country],['state',geo.region],['city',geo.city],['zip',geo.zip],['asn',geo.asn]] },
     { id:'full',      name:'FULL (Region+City+ASN)',           params:[['cr',geo.country],['state',geo.region],['city',geo.city],['asn',geo.asn]] },
     { id:'state-asn', name:'STATE+ASN (tanpa kota)',           params:[['cr',geo.country],['state',geo.region],['asn',geo.asn]] },
-    { id:'city-only', name:'CITY+ASN (tanpa provinsi)',        params:[['cr',geo.country],['city',geo.city],['asn',geo.asn]] },
+    { id:'city-asn',  name:'CITY+ASN (tanpa provinsi)',        params:[['cr',geo.country],['city',geo.city],['asn',geo.asn]] },
     { id:'asn-only',  name:'ASN_ONLY (ikut ISP terdekat)',     params:[['cr',geo.country],['asn',geo.asn]] },
     { id:'country',   name:'COUNTRY_ONLY (cuma negara)',       params:[['cr',geo.country]] },
   ];
@@ -438,12 +432,12 @@ function rateInfo(ok, score){
   if(!ok) return { label:'Gagal', cls:'fail' };
   if(score >= 100) return { label:'100% · Sempurna', cls:'ok' };
   if(score >= 80)  return { label:score+'% · Bagus', cls:'ok' };
-  if(score >= 50)  return { label:score+'% · Cukup', cls:'warn' };
+  if(score >= 50)  return { label:score+'% · Cukup Cocok', cls:'warn' };
   if(score > 0)    return { label:score+'% · Buruk', cls:'warn' };
   return { label:'0%', cls:'warn' };
 }
 
-async function checkOneIp(ip, retries, waterfall, onStatus){
+async function checkOneIp(ip, retries, waterfall, fastMode, onStatus){
   onStatus('geo', ip);
   const g = await geoLookup(ip);
   if(!g.ok) return { ip, error: 'Geo lookup gagal — IP tidak bisa di-resolve.' };
@@ -460,7 +454,9 @@ async function checkOneIp(ip, retries, waterfall, onStatus){
     variants,
     retries,
     waterfall,
-    minScore: 80
+    minScore: 80,
+    slowMode: true,
+    fastMode
   };
 
   try {
@@ -472,7 +468,7 @@ async function checkOneIp(ip, retries, waterfall, onStatus){
     });
     if(!r.ok) return { ip, geo: g, error: 'Server error: HTTP ' + r.status };
     const j = await r.json();
-    return { ip, geo: g, results: j.results || [], stoppedEarly: j.stoppedEarly, total: variants.length };
+    return { ip, geo: g, results: j.results || [], stoppedEarly: j.stoppedEarly, winnerId: j.winnerId, total: variants.length, fastMode: j.fastMode };
   } catch(e){
     if(e.name === 'AbortError') return { ip, aborted: true };
     return { ip, geo: g, error: e.message || 'Request gagal' };
@@ -494,7 +490,7 @@ function renderVariantRow(r){
 
   if(!ok){
     const err = (r.attempts && r.attempts[0] && r.attempts[0].error) || 'Gagal';
-    html += '<div class="cr-err">⚠ Gateway: ' + esc(err) + '</div>';
+    html += '<div class="cr-err">⚠ ' + esc(err) + '</div>';
   } else {
     const best = r.best;
     const exitPlace = [best.geo.city, best.geo.region, best.geo.country].filter(Boolean).join(', ') || '—';
@@ -514,7 +510,10 @@ function renderCheckRow(r){
   }
   const g = r.geo;
   const results = r.results || [];
-  const best = results.find(v => v.okCount > 0 && (v.matchScore || 0) >= 80) || results.find(v => v.okCount > 0) || results[results.length - 1];
+  const best = results.find(v => v.id === r.winnerId)
+            || results.find(v => v.okCount > 0 && (v.matchScore || 0) >= 80)
+            || results.find(v => v.okCount > 0)
+            || results[results.length - 1];
 
   let topBadge = '<span class="badge fail">GAGAL</span>';
   if(best && best.okCount > 0){
@@ -531,13 +530,14 @@ function renderCheckRow(r){
   html += '<div class="summary-ip"><span>' + flag + '</span><span class="mono">' + esc(r.ip) + '</span><span class="badge info">' + esc((g.country || '').toUpperCase()) + '</span></div>';
   html += '<div class="summary-badges">' + topBadge + '</div>';
   html += '</div>';
-  html += '<div class="summary-stats"><b>' + results.length + '</b>/' + r.total + ' varian diuji' + (r.stoppedEarly ? ' · <span style="color:var(--ok)">✓ stop early</span>' : '') + '</div>';
+  html += '<div class="summary-stats"><b>' + results.length + '</b>/' + r.total + ' varian diuji' + (r.stoppedEarly ? ' · <span style="color:var(--ok)">✓ stop early</span>' : '') + (r.fastMode ? ' · ⚡ fast' : '') + '</div>';
   html += '</div>';
 
   if(!results.length){
     html += '<div class="cr-err">Tidak ada varian yang berhasil.</div>';
   } else {
-    html += '<div style="font-size:11px;font-weight:800;color:var(--muted-2);text-transform:uppercase;letter-spacing:.1em;margin:14px 0 8px">Semua percobaan (' + results.length + ')</div>';
+    const label = (results.length === 1) ? 'Hasil (' : 'Semua percobaan (' + results.length + ')';
+    html += '<div style="font-size:11px;font-weight:800;color:var(--muted-2);text-transform:uppercase;letter-spacing:.1em;margin:14px 0 8px">' + esc(label) + (results.length === 1 ? '1)' : '') + '</div>';
     html += results.map(renderVariantRow).join('');
   }
 
@@ -553,8 +553,9 @@ async function runChecker(){
   const ips = parseIPs($('#checkerIps').value).out;
   if(!ips.length){ toast('Masukkan minimal 1 IP','warn'); return; }
 
-  const retries = $('#chkRetry').checked ? 2 : 1;
-  const waterfall = !$('#chkNoWaterfall').checked;
+  const retries = $('#chkRetry').checked ? 4 : 2;
+  const waterfall = true;
+  const fastMode = $('#chkFast').checked;
 
   checkRunning = true;
   checkController = new AbortController();
@@ -579,14 +580,14 @@ async function runChecker(){
     const txt = $('#progText'), fill = $('#progFill');
     if(!txt) return;
     if(phase === 'geo') txt.innerHTML = 'Lookup lokasi <b class="mono">' + esc(ip) + '</b>…';
-    else txt.innerHTML = 'Uji cascade untuk <b class="mono">' + esc(ip) + '</b>…';
+    else txt.innerHTML = 'Uji ' + (fastMode ? 'fast mode' : 'cascade') + ' untuk <b class="mono">' + esc(ip) + '</b>…';
     if(fill) fill.style.width = Math.round((completed / total) * 100) + '%';
   };
 
   try {
     for(const ip of ips){
       if(!checkRunning) break;
-      const row = await checkOneIp(ip, retries, waterfall, status);
+      const row = await checkOneIp(ip, retries, waterfall, fastMode, status);
       if(row.aborted) break;
       resultsHost.insertAdjacentHTML('beforeend', renderCheckRow(row));
       completed++;
@@ -649,18 +650,22 @@ $('#guideBtn').addEventListener('click', () => {
     + '1. Isi username & password DataImpulse di kartu atas.\n'
     + '2. Tempel IP target di Proxy Checker.\n'
     + '3. Klik "Cek Proxy Sekarang".\n\n'
-    + 'Cara kerja cascade:\n'
+    + 'FAST MODE (default, disarankan):\n'
+    + '• Kirim 1 request: FULL + ZIP (Region+City+ZIP+ASN)\n'
+    + '• Persis seperti auto-ip, hasil paling akurat & cepat\n\n'
+    + 'CASCADE MODE (uncheck Fast):\n'
     + '• Coba FULL+ZIP → FULL → STATE+ASN → CITY+ASN → ASN_ONLY → COUNTRY_ONLY\n'
+    + '• Jeda 700ms antar varian (anti 503)\n'
     + '• Stop begitu match score ≥ 80%\n'
-    + '• Kalau varian spesifik gagal, turun ke varian berikutnya\n'
     + '• COUNTRY_ONLY selalu jadi cadangan terakhir\n\n'
+    + 'RETRY AGRESIF:\n'
+    + '• 4× percobaan pada 503/timeout (jeda 1.5 dtk)\n\n'
     + 'Skor match:\n'
-    + '• Negara 30% · Provinsi 20% · Kota 20% · ZIP 15% · ASN 15%\n\n'
-    + 'Format: base__cr.id;state.eastjava;city.surabaya;zip.60271;asn.135478');
+    + '• Negara 30% · Provinsi 20% · Kota 20% · ZIP 15% · ASN 15%');
 });
 
 /* INIT */
 renderAccount(false);
 </script>
 </body>
-  </html>
+</html>
