@@ -1,14 +1,55 @@
 import { HttpsProxyAgent } from 'https-proxy-agent';
 import https from 'node:https';
 
-const TARGET = 'https://ipinfo.io/json';
 const TIMEOUT_MS = 20000;
 const GAP_BETWEEN_VARIANTS_MS = 700;
 const RETRY_DELAY_MS = 1500;
 
+// Target untuk uji lewat proxy — coba ipapi.co dulu, fallback ipinfo.io
+const TARGETS = [
+  { url: 'https://ipapi.co/json/',  parse: parseIpapi },
+  { url: 'https://ipinfo.io/json',  parse: parseIpinfo }
+];
+
 const sleep = (ms) => new Promise(r => setTimeout(r, ms));
 
-function proxyRequest(proxyUrl, timeoutMs) {
+/* Parsing response dari ipapi.co */
+function parseIpapi(data) {
+  if (!data || !data.ip || data.error) return null;
+  return {
+    ip: data.ip,
+    country: (data.country_code || '').toLowerCase(),
+    countryName: data.country_name || '',
+    region: data.region || '',
+    city: data.city || '',
+    zip: data.postal || '',
+    asn: String(data.asn || '').replace(/^AS/i, ''),
+    org: data.org || '',
+    isp: data.org || '',
+    source: 'ipapi.co'
+  };
+}
+
+/* Parsing response dari ipinfo.io */
+function parseIpinfo(data) {
+  if (!data || !data.ip) return null;
+  const asnMatch = (data.org || '').match(/^AS(\d+)/);
+  return {
+    ip: data.ip,
+    country: (data.country || '').toLowerCase(),
+    countryName: data.country || '',
+    region: data.region || '',
+    city: data.city || '',
+    zip: data.postal || '',
+    asn: asnMatch ? asnMatch[1] : '',
+    org: data.org || '',
+    isp: data.org || '',
+    source: 'ipinfo.io'
+  };
+}
+
+/* Coba satu target lewat proxy */
+function tryTargetThroughProxy(target, proxyUrl, timeoutMs) {
   return new Promise((resolve) => {
     const start = Date.now();
     let agent;
@@ -18,7 +59,7 @@ function proxyRequest(proxyUrl, timeoutMs) {
     let done = false;
     const finish = (r) => { if (done) return; done = true; resolve({ latencyMs: Date.now() - start, ...r }); };
 
-    const req = https.request(TARGET, {
+    const req = https.request(target.url, {
       method: 'GET', agent, timeout: timeoutMs,
       headers: { 'User-Agent': 'LIMZXCM/1.0', 'Accept': 'application/json' }
     }, (res) => {
@@ -32,26 +73,30 @@ function proxyRequest(proxyUrl, timeoutMs) {
             ok: false, latencyMs,
             error: 'Gateway HTTP ' + res.statusCode,
             statusCode: res.statusCode,
-            retryable: res.statusCode >= 500 || res.statusCode === 429
+            retryable: res.statusCode >= 500 || res.statusCode === 429,
+            tryNext: res.statusCode === 429 || res.statusCode === 403
           });
         }
         try {
-          const data = JSON.parse(body);
-          if (!data || !data.ip) return finish({ ok: false, latencyMs, error: 'No IP in response', retryable: false });
-          const asnMatch = (data.org || '').match(/^AS(\d+)/);
+          const raw = JSON.parse(body);
+          const parsed = target.parse(raw);
+          if (!parsed) {
+            return finish({ ok: false, latencyMs, error: 'Empty/invalid data', retryable: false, tryNext: true });
+          }
           finish({
             ok: true, latencyMs,
-            exitIp: data.ip,
+            exitIp: parsed.ip,
             geo: {
-              country: (data.country || '').toLowerCase(),
-              region: data.region || '',
-              city: data.city || '',
-              zip: data.postal || '',
-              org: data.org || '',
-              asn: asnMatch ? asnMatch[1] : ''
-            }
+              country: parsed.country,
+              region: parsed.region,
+              city: parsed.city,
+              zip: parsed.zip,
+              org: parsed.org,
+              asn: parsed.asn
+            },
+            source: parsed.source
           });
-        } catch { finish({ ok: false, latencyMs, error: 'Bad JSON', retryable: false }); }
+        } catch { finish({ ok: false, latencyMs, error: 'Bad JSON', retryable: false, tryNext: true }); }
       });
     });
 
@@ -59,6 +104,20 @@ function proxyRequest(proxyUrl, timeoutMs) {
     req.on('error', (e) => finish({ ok: false, error: e.message || 'Failed', retryable: true }));
     req.end();
   });
+}
+
+/* Proxy request — coba ipapi.co dulu, kalau gagal/rate-limit fallback ipinfo.io */
+async function proxyRequest(proxyUrl, timeoutMs) {
+  let lastErr = null;
+  for (const target of TARGETS) {
+    const r = await tryTargetThroughProxy(target, proxyUrl, timeoutMs);
+    if (r.ok) return r;
+    lastErr = r;
+    // Kalau error-nya bukan "tryNext", langsung return (misal 503 retryable)
+    if (!r.tryNext) return r;
+    // Kalau 429/403 dari ipapi.co → coba ipinfo.io
+  }
+  return lastErr || { ok: false, error: 'All targets failed', retryable: true };
 }
 
 const slug = v => String(v == null ? '' : v).toLowerCase().replace(/[^a-z0-9]/g, '');
@@ -160,12 +219,8 @@ export default async function handler(req, res) {
 
   return res.status(200).json({
     ok: true, ts: Date.now(),
-    results,
-    stoppedEarly,
-    winnerId,
-    tested: results.length,
-    total: list.length,
-    fastMode
+    results, stoppedEarly, winnerId,
+    tested: results.length, total: list.length, fastMode
   });
 }
 
