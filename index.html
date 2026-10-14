@@ -4,427 +4,141 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>LIMZXCM — IP to Username</title>
-<meta name="description" content="Generator username targeting DataImpulse dari IP">
 <script>
-try {
-  var t = localStorage.getItem("theme");
-  if (!t) t = "dark";
-  document.documentElement.classList.toggle("dark", t === "dark");
-} catch (e) {}
+try { var t = localStorage.getItem("theme") || "dark"; document.documentElement.classList.toggle("dark", t === "dark"); } catch(e){}
 </script>
 <style>
 :root{
-  --bg:#0a0b12;
-  --bg2:#0e1018;
-  --panel:rgba(22,24,36,.72);
-  --panel-solid:#161824;
-  --panel-2:rgba(30,33,48,.6);
-  --border:rgba(255,255,255,.08);
-  --border-2:rgba(255,255,255,.14);
-  --ink:#eef1ff;
-  --muted:rgba(238,241,255,.58);
-  --muted-2:rgba(238,241,255,.4);
-  --accent:#8b5cf6;
-  --accent-2:#22d3ee;
-  --accent-3:#f472b6;
-  --danger:#fb7185;
-  --ok:#34d399;
+  --bg:#0a0b12;--panel:rgba(22,24,36,.72);--border:rgba(255,255,255,.08);--border-2:rgba(255,255,255,.14);
+  --ink:#eef1ff;--muted:rgba(238,241,255,.58);--muted-2:rgba(238,241,255,.4);
+  --accent:#8b5cf6;--accent-2:#22d3ee;--danger:#fb7185;--ok:#34d399;--warn:#fbbf24;
   --code-bg:rgba(255,255,255,.045);
-  --glow:0 0 0 1px rgba(139,92,246,.28), 0 8px 40px -8px rgba(139,92,246,.35);
 }
 html:not(.dark){
-  --bg:#f4f6fc;
-  --bg2:#eaeefb;
-  --panel:rgba(255,255,255,.85);
-  --panel-solid:#ffffff;
-  --panel-2:rgba(244,247,255,.85);
-  --border:rgba(15,20,45,.08);
-  --border-2:rgba(15,20,45,.14);
-  --ink:#0d1226;
-  --muted:rgba(13,18,38,.62);
-  --muted-2:rgba(13,18,38,.42);
-  --code-bg:rgba(13,18,38,.05);
+  --bg:#f4f6fc;--panel:rgba(255,255,255,.85);--border:rgba(15,20,45,.08);--border-2:rgba(15,20,45,.14);
+  --ink:#0d1226;--muted:rgba(13,18,38,.62);--muted-2:rgba(13,18,38,.42);--code-bg:rgba(13,18,38,.05);
 }
-*{box-sizing:border-box}
-html,body{margin:0;padding:0}
-body{
-  background:var(--bg);
-  color:var(--ink);
-  min-height:100vh;
-  font-family:"Inter",system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
-  -webkit-font-smoothing:antialiased;
-  position:relative;
-  overflow-x:hidden;
-  transition:background .3s ease,color .3s ease;
-}
-/* animated aurora background */
-body::before{
-  content:"";
-  position:fixed;inset:-20%;
-  background:
-    radial-gradient(38% 40% at 12% 8%, rgba(139,92,246,.35), transparent 62%),
-    radial-gradient(34% 36% at 90% 12%, rgba(34,211,238,.28), transparent 60%),
-    radial-gradient(40% 40% at 78% 92%, rgba(244,114,182,.22), transparent 62%),
-    radial-gradient(30% 30% at 22% 88%, rgba(99,102,241,.25), transparent 60%);
-  filter:blur(60px);
-  z-index:-2;
-  animation:drift 22s ease-in-out infinite alternate;
-  pointer-events:none;
-}
+*{box-sizing:border-box}html,body{margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);min-height:100vh;font-family:"Inter",system-ui,sans-serif;-webkit-font-smoothing:antialiased;position:relative;overflow-x:hidden;transition:background .3s,color .3s}
+body::before{content:"";position:fixed;inset:-20%;background:radial-gradient(38% 40% at 12% 8%,rgba(139,92,246,.35),transparent 62%),radial-gradient(34% 36% at 90% 12%,rgba(34,211,238,.28),transparent 60%),radial-gradient(40% 40% at 78% 92%,rgba(244,114,182,.22),transparent 62%);filter:blur(60px);z-index:-2;animation:drift 22s ease-in-out infinite alternate;pointer-events:none}
 html:not(.dark) body::before{opacity:.5}
-body::after{
-  content:"";
-  position:fixed;inset:0;
-  background-image:
-    linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px);
-  background-size:44px 44px;
-  mask-image:radial-gradient(circle at 50% 30%, black, transparent 78%);
-  z-index:-1;
-  pointer-events:none;
-}
-html:not(.dark) body::after{
-  background-image:
-    linear-gradient(rgba(13,18,38,.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(13,18,38,.04) 1px, transparent 1px);
-}
-@keyframes drift{
-  0%{transform:translate(0,0) scale(1)}
-  100%{transform:translate(2%,-2%) scale(1.08)}
-}
-
+@keyframes drift{to{transform:translate(2%,-2%) scale(1.08)}}
 .wrap{max-width:880px;margin:0 auto;padding:0 20px 110px;position:relative;z-index:1}
-.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace}
+.mono{font-family:ui-monospace,Menlo,Consolas,monospace}
 .muted{color:var(--muted)}
-.grad-text{
-  background:linear-gradient(100deg,var(--accent),var(--accent-2) 55%,var(--accent-3));
-  -webkit-background-clip:text;background-clip:text;color:transparent;
-}
-
-/* ---------- HEADER ---------- */
+.grad-text{background:linear-gradient(100deg,var(--accent),var(--accent-2) 55%,#f472b6);-webkit-background-clip:text;background-clip:text;color:transparent}
 .hdr{display:flex;align-items:center;justify-content:space-between;padding:26px 0 22px;gap:14px}
 .brand{display:flex;align-items:center;gap:14px;min-width:0}
-.logo{
-  width:50px;height:50px;border-radius:16px;flex:none;
-  background:linear-gradient(135deg,var(--accent),var(--accent-2));
-  color:#0a0b12;display:flex;align-items:center;justify-content:center;
-  font-weight:900;font-size:22px;letter-spacing:-.5px;
-  box-shadow:0 8px 30px -8px rgba(139,92,246,.8), inset 0 1px 0 rgba(255,255,255,.4);
-  position:relative;overflow:hidden;
-}
-.logo::after{
-  content:"";position:absolute;inset:0;
-  background:linear-gradient(120deg,transparent 40%,rgba(255,255,255,.5) 50%,transparent 60%);
-  transform:translateX(-120%);
-  animation:shine 4.5s ease-in-out infinite;
-}
+.logo{width:50px;height:50px;border-radius:16px;flex:none;background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#0a0b12;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:22px;box-shadow:0 8px 30px -8px rgba(139,92,246,.8);position:relative;overflow:hidden}
+.logo::after{content:"";position:absolute;inset:0;background:linear-gradient(120deg,transparent 40%,rgba(255,255,255,.5) 50%,transparent 60%);transform:translateX(-120%);animation:shine 4.5s ease-in-out infinite}
 @keyframes shine{0%,70%{transform:translateX(-120%)}100%{transform:translateX(120%)}}
-.brand-txt{display:flex;flex-direction:column;min-width:0}
-.brand-name{
-  font-weight:900;font-size:19px;letter-spacing:.14em;line-height:1.1;
-  white-space:nowrap;
-}
+.brand-name{font-weight:900;font-size:19px;letter-spacing:.14em;line-height:1.1}
 .brand-sub{font-size:10.5px;font-weight:700;letter-spacing:.2em;color:var(--muted-2);text-transform:uppercase}
-.hdr-actions{display:flex;gap:10px;align-items:center;flex:none}
-
-/* ---------- GLASS BUTTONS ---------- */
-.g-btn{
-  border:1px solid var(--border);
-  cursor:pointer;
-  background:var(--panel);
-  color:var(--ink);
-  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
-  border-radius:14px;
-  padding:11px 18px;
-  font:inherit;font-weight:700;font-size:14px;
-  transition:all .22s cubic-bezier(.2,.8,.2,1);
-  white-space:nowrap;position:relative;overflow:hidden;
-  display:inline-flex;align-items:center;gap:8px;justify-content:center;
-}
-.g-btn:hover:not(:disabled){
-  border-color:var(--border-2);
-  transform:translateY(-2px);
-  box-shadow:0 10px 30px -12px rgba(139,92,246,.6);
-}
-.g-btn:active:not(:disabled){transform:translateY(0)}
+.hdr-actions{display:flex;gap:10px}
+.g-btn{border:1px solid var(--border);cursor:pointer;background:var(--panel);color:var(--ink);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-radius:14px;padding:11px 18px;font:inherit;font-weight:700;font-size:14px;transition:all .22s;white-space:nowrap;display:inline-flex;align-items:center;gap:8px;justify-content:center}
+.g-btn:hover:not(:disabled){border-color:var(--border-2);transform:translateY(-2px);box-shadow:0 10px 30px -12px rgba(139,92,246,.6)}
 .g-btn:disabled{opacity:.4;cursor:not-allowed}
-.g-btn.accent{
-  background:linear-gradient(135deg,var(--accent),var(--accent-2));
-  color:#0a0b12;border-color:transparent;font-weight:800;
-  box-shadow:0 8px 26px -10px rgba(139,92,246,.9);
-}
-.g-btn.accent:hover:not(:disabled){
-  box-shadow:0 14px 40px -10px rgba(139,92,246,1);
-  filter:brightness(1.06);
-}
+.g-btn.accent{background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#0a0b12;border-color:transparent;font-weight:800;box-shadow:0 8px 26px -10px rgba(139,92,246,.9)}
 .g-btn.mini{padding:7px 13px;font-size:12px;border-radius:11px}
-.g-btn.danger:hover:not(:disabled){
-  border-color:transparent;
-  background:linear-gradient(135deg,var(--danger),#e11d48);
-  color:#fff;
-}
+.g-btn.danger:hover:not(:disabled){border-color:transparent;background:linear-gradient(135deg,var(--danger),#e11d48);color:#fff}
 .g-btn.icon{width:46px;height:46px;padding:0}
-
-/* ---------- GLASS INPUTS ---------- */
-.g-input{
-  width:100%;
-  background:var(--code-bg);
-  color:var(--ink);
-  border:1px solid var(--border);
-  outline:none;
-  border-radius:13px;
-  padding:13px 15px;
-  font:inherit;font-size:14px;
-  transition:all .2s ease;
-}
+.g-btn.stop{background:linear-gradient(135deg,var(--danger),#e11d48);color:#fff;border-color:transparent}
+.g-input{width:100%;background:var(--code-bg);color:var(--ink);border:1px solid var(--border);outline:none;border-radius:13px;padding:13px 15px;font:inherit;font-size:14px;transition:all .2s}
 .g-input::placeholder{color:var(--muted-2)}
-.g-input:hover{border-color:var(--border-2)}
-.g-input:focus{
-  border-color:rgba(139,92,246,.55);
-  background:rgba(139,92,246,.06);
-  box-shadow:0 0 0 4px rgba(139,92,246,.15);
-}
-textarea.g-input{resize:vertical;min-height:140px;line-height:1.6}
-
-/* ---------- GLASS CARDS ---------- */
-.card{
-  background:var(--panel);
-  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
-  border:1px solid var(--border);
-  border-radius:22px;
-  padding:24px;
-  margin-bottom:20px;
-  transition:border-color .3s ease,transform .3s ease,box-shadow .3s ease;
-  position:relative;
-  overflow:hidden;
-}
+.g-input:focus{border-color:rgba(139,92,246,.55);background:rgba(139,92,246,.06);box-shadow:0 0 0 4px rgba(139,92,246,.15)}
+textarea.g-input{resize:vertical;min-height:120px;line-height:1.6}
+.card{background:var(--panel);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid var(--border);border-radius:22px;padding:24px;margin-bottom:20px;position:relative;overflow:hidden;transition:border-color .3s}
 .card:hover{border-color:var(--border-2)}
-.card::before{
-  content:"";position:absolute;top:0;left:24px;right:24px;height:1px;
-  background:linear-gradient(90deg,transparent,rgba(255,255,255,.16),transparent);
-}
-.card.highlight{
-  background:
-    linear-gradient(135deg,rgba(139,92,246,.12),rgba(34,211,238,.06)) padding-box,
-    var(--panel) padding-box;
-  border-color:rgba(139,92,246,.28);
-}
-.card.highlight::before{background:linear-gradient(90deg,transparent,rgba(139,92,246,.6),transparent)}
+.card::before{content:"";position:absolute;top:0;left:24px;right:24px;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.16),transparent)}
+.card.highlight{border-color:rgba(139,92,246,.28)}
 .card.ok{border-color:rgba(52,211,153,.3)}
-.card.ok::before{background:linear-gradient(90deg,transparent,rgba(52,211,153,.5),transparent)}
-
-/* ---------- HERO ---------- */
-.kicker{
-  display:inline-flex;align-items:center;gap:8px;
-  font-size:10.5px;font-weight:800;letter-spacing:.22em;
-  color:var(--muted-2);text-transform:uppercase;
-  padding:7px 14px;border-radius:99px;
-  border:1px solid var(--border);background:var(--code-bg);
-  margin:0 0 18px;
-}
+.kicker{display:inline-flex;align-items:center;gap:8px;font-size:10.5px;font-weight:800;letter-spacing:.22em;color:var(--muted-2);text-transform:uppercase;padding:7px 14px;border-radius:99px;border:1px solid var(--border);background:var(--code-bg);margin:0 0 18px}
 .kicker .dot{width:6px;height:6px;border-radius:50%;background:var(--accent-2);box-shadow:0 0 12px var(--accent-2);animation:pulse 2s ease-in-out infinite}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
-.hero{
-  font-size:clamp(32px,7.5vw,52px);font-weight:900;line-height:1.02;
-  letter-spacing:-.035em;margin:0 0 16px;
-}
-.hero .hl{
-  position:relative;display:inline-block;
-}
-.hero .hl::after{
-  content:"";position:absolute;left:0;right:0;bottom:6px;height:.16em;
-  background:linear-gradient(90deg,var(--accent),var(--accent-2));
-  border-radius:99px;z-index:-1;opacity:.7;
-  animation:underline 3s ease-in-out infinite alternate;
-}
-@keyframes underline{0%{transform:scaleX(.94)}100%{transform:scaleX(1)}}
+@keyframes pulse{50%{opacity:.35}}
+.hero{font-size:clamp(32px,7.5vw,52px);font-weight:900;line-height:1.02;letter-spacing:-.035em;margin:0 0 16px}
+.hero .hl{position:relative;display:inline-block}
+.hero .hl::after{content:"";position:absolute;left:0;right:0;bottom:6px;height:.16em;background:linear-gradient(90deg,var(--accent),var(--accent-2));border-radius:99px;z-index:-1;opacity:.7}
 .sub{font-size:15.5px;font-weight:500;margin:0 0 30px;line-height:1.6;color:var(--muted);max-width:560px}
-
-/* ---------- SECTION ---------- */
 .s-title{font-size:19px;font-weight:900;letter-spacing:-.02em;margin:0 0 4px}
 .s-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:14px}
 .s-desc{font-size:13.5px;color:var(--muted);margin:0 0 18px;line-height:1.65}
 .s-desc b{color:var(--ink);font-weight:700}
-
-/* ---------- ROW / GRID ---------- */
 .row-between{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
 .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
 @media(max-width:600px){.grid2,.grid3{grid-template-columns:1fr}}
 label.fl{display:block;font-size:11.5px;font-weight:800;color:var(--muted);margin-bottom:7px;letter-spacing:.03em}
-
-/* ---------- PILL / BADGE ---------- */
-.pill{
-  display:inline-block;font-size:9.5px;font-weight:900;letter-spacing:.12em;
-  padding:5px 11px;border-radius:99px;
-  background:rgba(52,211,153,.14);color:var(--ok);
-  border:1px solid rgba(52,211,153,.25);
-}
+.pill{display:inline-block;font-size:9.5px;font-weight:900;letter-spacing:.12em;padding:5px 11px;border-radius:99px;background:rgba(52,211,153,.14);color:var(--ok);border:1px solid rgba(52,211,153,.25)}
 .pill.warn{background:rgba(251,113,133,.14);color:var(--danger);border-color:rgba(251,113,133,.28)}
-
-/* ---------- CHIPS ---------- */
+.pill.act{background:rgba(34,211,238,.16);color:var(--accent-2);border-color:rgba(34,211,238,.35)}
 .opts{display:flex;flex-wrap:wrap;gap:9px;margin:16px 0}
-.chk{
-  display:inline-flex;align-items:center;gap:9px;cursor:pointer;user-select:none;
-  background:var(--code-bg);
-  border:1px solid var(--border);
-  padding:10px 15px;border-radius:12px;
-  font-size:12.5px;font-weight:700;color:var(--muted);
-  transition:all .2s ease;
-}
+.chk{display:inline-flex;align-items:center;gap:9px;cursor:pointer;user-select:none;background:var(--code-bg);border:1px solid var(--border);padding:10px 15px;border-radius:12px;font-size:12.5px;font-weight:700;color:var(--muted);transition:all .2s}
 .chk:hover{border-color:var(--border-2);color:var(--ink)}
-.chk input{
-  appearance:none;-webkit-appearance:none;
-  width:16px;height:16px;border-radius:5px;
-  border:1.5px solid var(--border-2);
-  background:transparent;cursor:pointer;
-  position:relative;transition:all .2s ease;flex:none;
-}
-.chk input:checked{
-  background:linear-gradient(135deg,var(--accent),var(--accent-2));
-  border-color:transparent;
-}
-.chk input:checked::after{
-  content:"";position:absolute;left:4.5px;top:1.5px;
-  width:4px;height:8px;border:solid #0a0b12;border-width:0 2px 2px 0;
-  transform:rotate(45deg);
-}
+.chk input{appearance:none;-webkit-appearance:none;width:16px;height:16px;border-radius:5px;border:1.5px solid var(--border-2);background:transparent;cursor:pointer;position:relative;transition:all .2s;flex:none}
+.chk input:checked{background:linear-gradient(135deg,var(--accent),var(--accent-2));border-color:transparent}
+.chk input:checked::after{content:"";position:absolute;left:4.5px;top:1.5px;width:4px;height:8px;border:solid #0a0b12;border-width:0 2px 2px 0;transform:rotate(45deg)}
 .chk.on{color:var(--ink);border-color:rgba(139,92,246,.35);background:rgba(139,92,246,.09)}
-
-/* ---------- ADVANCED ---------- */
 details.adv{margin:8px 0 16px}
-details.adv summary{
-  cursor:pointer;font-size:12.5px;font-weight:800;color:var(--muted);
-  padding:10px 14px;list-style:none;
-  background:var(--code-bg);border:1px solid var(--border);
-  border-radius:12px;transition:all .2s ease;
-}
-details.adv summary:hover{color:var(--ink);border-color:var(--border-2)}
+details.adv summary{cursor:pointer;font-size:12.5px;font-weight:800;color:var(--muted);padding:10px 14px;list-style:none;background:var(--code-bg);border:1px solid var(--border);border-radius:12px;transition:all .2s}
 details.adv summary::-webkit-details-marker{display:none}
-details.adv summary::before{content:"⚙  ";display:inline-block;transition:transform .2s;margin-right:2px}
-details.adv[open] summary::before{transform:rotate(90deg)}
+details.adv summary::before{content:"⚙  ";margin-right:2px}
 details.adv[open] summary{margin-bottom:12px}
-
-/* ---------- ACCOUNT ---------- */
-.acct-chip{
-  display:flex;align-items:center;gap:11px;
-  background:var(--code-bg);border:1px solid var(--border);
-  padding:11px 16px;border-radius:13px;font-size:13px;font-weight:700;
-}
-.acct-chip .dot{
-  width:9px;height:9px;border-radius:50%;background:var(--ok);
-  box-shadow:0 0 0 4px rgba(52,211,153,.18),0 0 12px var(--ok);
-  animation:pulse 2s ease-in-out infinite;flex:none;
-}
-
-/* ---------- RESULT ---------- */
-#results{margin-top:20px}
-.result-bar{
-  display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;
-  padding:14px 16px;margin:6px 0 14px;
-  background:var(--code-bg);border:1px solid var(--border);border-radius:14px;
-}
-.stat{font-size:12.5px;color:var(--muted);font-weight:600}
-.stat b{color:var(--ink);font-weight:800}
-.list{max-height:500px;overflow:auto;padding-right:6px;margin:0 -6px}
-.list::-webkit-scrollbar{width:8px}
-.list::-webkit-scrollbar-thumb{background:var(--border-2);border-radius:99px}
-.list::-webkit-scrollbar-track{background:transparent}
-.rrow{
-  display:flex;align-items:center;gap:14px;padding:14px;border-radius:15px;margin-bottom:10px;
-  background:var(--code-bg);border:1px solid var(--border);
-  transition:all .2s ease;
-  animation:slideIn .35s cubic-bezier(.2,.9,.3,1) both;
-}
+.acct-chip{display:flex;align-items:center;gap:11px;background:var(--code-bg);border:1px solid var(--border);padding:11px 16px;border-radius:13px;font-size:13px;font-weight:700}
+.acct-chip .dot{width:9px;height:9px;border-radius:50%;background:var(--ok);box-shadow:0 0 0 4px rgba(52,211,153,.18),0 0 12px var(--ok);flex:none}
+/* CHECK ROWS */
+.checkrow{background:var(--code-bg);border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:12px;animation:slideIn .35s cubic-bezier(.2,.9,.3,1) both}
 @keyframes slideIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-.rrow:hover{border-color:rgba(139,92,246,.3);background:rgba(139,92,246,.06)}
-.rrow .info{min-width:0;flex:1}
-.rrow .ip{font-size:13px;font-weight:800;display:block;word-break:break-all;color:var(--ink)}
-.rrow .loc{font-size:11.5px;color:var(--muted);display:block;margin-top:5px;line-height:1.55}
-.rrow .flag{font-size:14px}
-.rrow code{
-  display:block;font-size:12.5px;background:rgba(139,92,246,.09);padding:9px 12px;border-radius:10px;
-  margin-top:8px;word-break:break-all;
-  font-family:ui-monospace,Menlo,Consolas,monospace;
-  color:#c4b5fd;border:1px solid rgba(139,92,246,.15);
-}
-html:not(.dark) .rrow code{color:#6d28d9;background:rgba(139,92,246,.08)}
-.rrow.bad{opacity:.65}
-.pill-inline{
-  display:inline-block;font-size:9px;font-weight:900;letter-spacing:.1em;
-  padding:3px 8px;border-radius:99px;margin-left:6px;vertical-align:1px;
-  background:rgba(251,113,133,.16);color:var(--danger);
-  border:1px solid rgba(251,113,133,.28);
-}
-
-/* ---------- HISTORY ---------- */
-.hitem{
-  display:flex;align-items:center;gap:12px;padding:14px;border-radius:15px;margin-bottom:10px;
-  background:var(--code-bg);border:1px solid var(--border);
-  transition:all .2s ease;
-}
-.hitem:hover{border-color:var(--border-2)}
+.checkrow.win{border-color:rgba(52,211,153,.4);background:linear-gradient(135deg,rgba(52,211,153,.08),transparent)}
+.checkrow.fail{border-color:rgba(251,113,133,.3);opacity:.75}
+.cr-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+.cr-ip{font-size:15px;font-weight:900}
+.cr-ip .mono{font-family:ui-monospace,Menlo,monospace;letter-spacing:.02em}
+.cr-badges{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.badge{font-size:10px;font-weight:900;letter-spacing:.08em;padding:5px 10px;border-radius:99px;border:1px solid}
+.badge.ok{background:rgba(52,211,153,.16);color:var(--ok);border-color:rgba(52,211,153,.35)}
+.badge.fail{background:rgba(251,113,133,.16);color:var(--danger);border-color:rgba(251,113,133,.35)}
+.badge.warn{background:rgba(251,191,36,.16);color:var(--warn);border-color:rgba(251,191,36,.35)}
+.badge.info{background:rgba(34,211,238,.14);color:var(--accent-2);border-color:rgba(34,211,238,.3)}
+.cr-meta{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-bottom:12px;font-weight:600}
+.cr-meta b{color:var(--ink)}
+.cr-label{font-size:11px;font-weight:800;color:var(--muted-2);text-transform:uppercase;letter-spacing:.08em;margin:12px 0 6px}
+.cr-user{background:rgba(139,92,246,.09);border:1px solid rgba(139,92,246,.18);padding:11px 13px;border-radius:11px;font-family:ui-monospace,Menlo,monospace;font-size:12.5px;word-break:break-all;color:#c4b5fd;display:flex;align-items:center;gap:10px}
+html:not(.dark) .cr-user{color:#6d28d9;background:rgba(139,92,246,.08)}
+.cr-user span{flex:1;min-width:0}
+.cr-line{font-size:12px;color:var(--muted);margin-top:6px;line-height:1.55;font-family:ui-monospace,Menlo,monospace;word-break:break-word}
+.cr-line b{color:var(--ink);font-family:inherit}
+details.attempts{margin-top:14px;border-top:1px solid var(--border);padding-top:12px}
+details.attempts summary{cursor:pointer;font-size:12px;font-weight:800;color:var(--muted);list-style:none;padding:4px 0}
+details.attempts summary::-webkit-details-marker{display:none}
+details.attempts summary::before{content:"▸ ";transition:transform .15s;display:inline-block;margin-right:4px}
+details.attempts[open] summary::before{transform:rotate(90deg)}
+.attempt{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;background:var(--panel);border:1px solid var(--border);border-radius:10px;margin-bottom:7px;font-size:12px;flex-wrap:wrap}
+.attempt .name{font-weight:800;flex:1;min-width:0}
+.attempt .rate{font-weight:900;font-family:ui-monospace,monospace;padding:3px 9px;border-radius:99px;font-size:11px}
+.rate.g{background:rgba(52,211,153,.18);color:var(--ok)}
+.rate.b{background:rgba(34,211,238,.16);color:var(--accent-2)}
+.rate.y{background:rgba(251,191,36,.16);color:var(--warn)}
+.rate.r{background:rgba(251,113,133,.16);color:var(--danger)}
+.codebox{background:rgba(10,11,18,.55);border:1px solid var(--border);border-radius:15px;padding:16px 18px;margin:16px 0;font-family:ui-monospace,Menlo,monospace;font-size:12.5px;line-height:1.85;word-break:break-all;white-space:pre-wrap;color:#a5f3fc}
+html:not(.dark) .codebox{background:rgba(13,18,38,.04);color:#0e7490}
+.codebox .k{color:var(--muted-2);display:inline-block;min-width:88px}
+.note{font-size:12px;color:var(--muted);line-height:1.65;background:var(--code-bg);border:1px solid var(--border);padding:13px 15px;border-radius:13px;margin-top:14px}
+.note b{color:var(--ink)}
+.hitem{display:flex;align-items:center;gap:12px;padding:14px;border-radius:15px;margin-bottom:10px;background:var(--code-bg);border:1px solid var(--border)}
 .hitem .info{flex:1;min-width:0}
 .hitem .t{font-size:13px;font-weight:800}
 .hitem .m{font-size:11.5px;color:var(--muted);margin-top:4px}
-
-/* ---------- CODEBOX ---------- */
-.codebox{
-  background:rgba(10,11,18,.55);
-  border:1px solid var(--border);
-  border-radius:15px;
-  padding:16px 18px;margin:16px 0;
-  font-family:ui-monospace,Menlo,Consolas,monospace;
-  font-size:12.5px;line-height:1.85;
-  word-break:break-all;white-space:pre-wrap;
-  color:#a5f3fc;
-}
-html:not(.dark) .codebox{background:rgba(13,18,38,.04);color:#0e7490}
-.codebox .k{color:var(--muted-2);display:inline-block;min-width:88px}
-.note{
-  font-size:12px;color:var(--muted);line-height:1.65;
-  background:var(--code-bg);border:1px solid var(--border);
-  padding:13px 15px;border-radius:13px;margin-top:14px;
-}
-.note b{color:var(--ink)}
-
-/* ---------- TOAST ---------- */
-.toast{
-  position:fixed;left:50%;bottom:28px;
-  transform:translate(-50%,140%);
-  background:linear-gradient(135deg,var(--accent),var(--accent-2));
-  color:#0a0b12;padding:14px 24px;border-radius:15px;
-  font-size:13.5px;font-weight:800;z-index:999;opacity:0;pointer-events:none;
-  transition:transform .35s cubic-bezier(.2,.9,.3,1.3),opacity .3s;
-  box-shadow:0 16px 44px -10px rgba(139,92,246,.85);
-  max-width:88vw;text-align:center;
-}
+.toast{position:fixed;left:50%;bottom:28px;transform:translate(-50%,140%);background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#0a0b12;padding:14px 24px;border-radius:15px;font-size:13.5px;font-weight:800;z-index:999;opacity:0;pointer-events:none;transition:all .35s cubic-bezier(.2,.9,.3,1.3);box-shadow:0 16px 44px -10px rgba(139,92,246,.85);max-width:88vw;text-align:center}
 .toast.show{transform:translate(-50%,0);opacity:1}
-.toast.warn{background:linear-gradient(135deg,var(--danger),#e11d48);color:#fff;box-shadow:0 16px 44px -10px rgba(251,113,133,.85)}
-
-/* ---------- FOOTER ---------- */
+.toast.warn{background:linear-gradient(135deg,var(--danger),#e11d48);color:#fff}
 .foot{text-align:center;font-size:11.5px;color:var(--muted-2);padding:24px 0 0;line-height:1.8;letter-spacing:.02em}
 .foot .grad-text{font-weight:800;letter-spacing:.18em}
-
-/* ---------- SPINNER ---------- */
-.spinner{
-  display:inline-block;width:14px;height:14px;
-  border:2px solid var(--border-2);
-  border-top-color:var(--accent);
-  border-radius:50%;animation:spin .7s linear infinite;
-  vertical-align:-2px;margin-right:9px;
-}
+.spinner{display:inline-block;width:14px;height:14px;border:2px solid var(--border-2);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite;vertical-align:-2px;margin-right:9px}
 @keyframes spin{to{transform:rotate(360deg)}}
-
-/* ---------- MISC ---------- */
-@media(max-width:520px){
-  .card{padding:20px;border-radius:20px}
-  .hdr{padding:20px 0 18px}
-  .brand-name{font-size:16px;letter-spacing:.12em}
-  .brand-sub{font-size:9.5px}
-  .logo{width:44px;height:44px;font-size:19px;border-radius:14px}
-  .g-btn.icon{width:42px;height:42px}
-}
+.progress{background:var(--code-bg);border:1px solid var(--border);border-radius:14px;padding:14px 16px;margin:16px 0;font-size:13px}
+.progress-bar{height:6px;background:var(--border);border-radius:99px;overflow:hidden;margin-top:10px}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent-2));border-radius:99px;transition:width .3s;width:0%}
+@media(max-width:520px){.card{padding:20px;border-radius:20px}.hdr{padding:20px 0 18px}.brand-name{font-size:16px;letter-spacing:.12em}.logo{width:44px;height:44px;font-size:19px}.g-btn.icon{width:42px;height:42px}}
 </style>
 </head>
 <body>
@@ -433,15 +147,15 @@ html:not(.dark) .codebox{background:rgba(13,18,38,.04);color:#0e7490}
   <header class="hdr">
     <div class="brand">
       <div class="logo">L</div>
-      <div class="brand-txt">
+      <div>
         <div class="brand-name grad-text">LIMZXCM</div>
         <div class="brand-sub">IP → Username</div>
       </div>
     </div>
     <div class="hdr-actions">
-      <button type="button" id="themeBtn" class="g-btn icon" aria-label="Ganti tema" title="Ganti tema">
-        <svg id="icoMoon" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
-        <svg id="icoSun" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="display:none"><circle cx="12" cy="12" r="4.2"></circle><path d="M12 2v2.4M12 19.6V22M2 12h2.4M19.6 12H22M4.9 4.9l1.7 1.7M17.4 17.4l1.7 1.7M19.1 4.9l-1.7 1.7M6.6 17.4l-1.7 1.7"></path></svg>
+      <button type="button" id="themeBtn" class="g-btn icon" aria-label="Tema">
+        <svg id="icoMoon" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+        <svg id="icoSun" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" style="display:none"><circle cx="12" cy="12" r="4.2"></circle><path d="M12 2v2.4M12 19.6V22M2 12h2.4M19.6 12H22"></path></svg>
       </button>
       <button type="button" id="logoutBtn" class="g-btn">Keluar</button>
     </div>
@@ -449,53 +163,38 @@ html:not(.dark) .codebox{background:rgba(13,18,38,.04);color:#0e7490}
 
   <span class="kicker"><span class="dot"></span>LIMZXCM PROJECT · DATAIMPULSE × SUPERPROXY</span>
   <h1 class="hero">IP jadi <span class="hl grad-text">username</span>,<br>sekejap.</h1>
-  <p class="sub">Tempel satu atau banyak IP, dapatkan username DataImpulse dengan kode negara otomatis — cepat, akurat, dan rapi.</p>
+  <p class="sub">Tempel satu atau banyak IP, dapatkan username DataImpulse dengan kode negara otomatis — plus tes proxy langsung.</p>
 
-  <!-- ============ AKUN ============ -->
+  <!-- AKUN -->
   <section id="setupCard" class="card highlight">
     <div class="row-between" style="margin-bottom:8px">
       <h2 class="s-title">Siapkan akun DataImpulse</h2>
       <span class="pill warn" id="acctBadge">BELUM DIATUR</span>
     </div>
-    <p class="s-desc" id="setupHint">Tanpa username DataImpulse, generator belum bisa dipakai. Butuh waktu kurang dari satu menit.</p>
-
-    <div id="acctSummary" style="display:none">
-      <div class="acct-chip"><span class="dot"></span><span class="mono" id="acctUser">—</span></div>
-    </div>
-
+    <p class="s-desc" id="setupHint">Tanpa username DataImpulse, generator &amp; checker belum bisa dipakai.</p>
+    <div id="acctSummary" style="display:none"><div class="acct-chip"><span class="dot"></span><span class="mono" id="acctUser">—</span></div></div>
     <div id="acctForm">
       <div class="grid2">
-        <div>
-          <label class="fl" for="inpUser">Username DataImpulse</label>
-          <input id="inpUser" type="text" class="g-input mono" placeholder="contoh: 31bafb85f61eb5b57fb7" autocomplete="off" spellcheck="false">
-        </div>
-        <div>
-          <label class="fl" for="inpPass">Password DataImpulse</label>
-          <input id="inpPass" type="password" class="g-input mono" placeholder="••••••••••" autocomplete="off">
-        </div>
+        <div><label class="fl" for="inpUser">Username DataImpulse</label><input id="inpUser" type="text" class="g-input mono" placeholder="contoh: 31bafb85f61eb5b57fb7" autocomplete="off" spellcheck="false"></div>
+        <div><label class="fl" for="inpPass">Password DataImpulse</label><input id="inpPass" type="password" class="g-input mono" placeholder="••••••••••" autocomplete="off"></div>
       </div>
       <div style="display:flex;gap:10px;margin-top:18px;flex-wrap:wrap">
         <button id="saveAcct" class="g-btn accent" disabled>Simpan &amp; Lanjut</button>
         <button id="cancelAcct" class="g-btn" style="display:none">Batal</button>
       </div>
-      <p class="note">Data disimpan lokal di browser kamu (<b>localStorage</b>) dan tidak dikirim ke server mana pun.</p>
+      <p class="note">Data disimpan lokal di browser kamu (<b>localStorage</b>) dan tidak dikirim ke server mana pun kecuali untuk request proxy.</p>
     </div>
-
-    <div id="editAcctWrap" style="display:none;margin-top:16px">
-      <button id="editAcct" class="g-btn">Ubah akun</button>
-    </div>
+    <div id="editAcctWrap" style="display:none;margin-top:16px"><button id="editAcct" class="g-btn">Ubah akun</button></div>
   </section>
 
-  <!-- ============ GENERATOR ============ -->
+  <!-- GENERATOR -->
   <section class="card">
     <div class="s-head">
       <h2 class="s-title">Generator Username</h2>
       <button id="btnMyIp" class="g-btn mini">+ Pakai IP saya</button>
     </div>
-    <p class="s-desc">Tempel IP (satu per baris, atau pisahkan dengan spasi / koma). Kode negara diambil otomatis dari lookup geo.</p>
-
+    <p class="s-desc">Tempel IP (satu per baris / spasi / koma). Kode negara diambil otomatis dari lookup geo.</p>
     <textarea id="ipInput" class="g-input mono" spellcheck="false" placeholder="103.13.204.50&#10;8.8.8.8&#10;1.1.1.1"></textarea>
-
     <div class="opts">
       <label class="chk on"><input type="checkbox" id="optCountry" checked> Kode negara</label>
       <label class="chk"><input type="checkbox" id="optState"> Provinsi</label>
@@ -504,7 +203,6 @@ html:not(.dark) .codebox{background:rgba(13,18,38,.04);color:#0e7490}
       <label class="chk"><input type="checkbox" id="optAsn"> ASN</label>
       <label class="chk on"><input type="checkbox" id="autoGen" checked> Auto saat tempel</label>
     </div>
-
     <details class="adv">
       <summary>Pengaturan lanjutan</summary>
       <div class="grid3" style="margin-top:4px">
@@ -517,65 +215,51 @@ html:not(.dark) .codebox{background:rgba(13,18,38,.04);color:#0e7490}
         <div><label class="fl">Negara cadangan</label><input id="fallbackCC" class="g-input mono" maxlength="2" placeholder="id" style="text-transform:lowercase"></div>
       </div>
     </details>
-
     <div style="display:flex;gap:10px;flex-wrap:wrap">
       <button id="genBtn" class="g-btn accent">⚡ Generate username</button>
       <button id="clearBtn" class="g-btn">Bersihkan</button>
     </div>
-
-    <div id="results">
-      <p class="muted" style="font-size:13.5px;margin-top:20px">Belum ada hasil. Tempel IP di atas untuk mulai.</p>
-    </div>
+    <div id="results"><p class="muted" style="font-size:13.5px;margin-top:20px">Belum ada hasil. Tempel IP di atas untuk mulai.</p></div>
   </section>
 
-  <!-- ============ RIWAYAT ============ -->
-  <section class="card">
+  <!-- PROXY CHECKER (REAL) -->
+  <section class="card" id="checkerCard">
     <div class="s-head">
-      <h2 class="s-title">Riwayat</h2>
-      <button id="clearHist" class="g-btn mini danger">Hapus</button>
-    </div>
-    <div id="histBox"><p class="muted" style="font-size:13.5px">Belum ada riwayat.</p></div>
-  </section>
-
-  <!-- ============ PROXY CHECKER ============ -->
-  <section class="card">
-    <div class="s-head">
-      <h2 class="s-title">Proxy Checker</h2>
+      <h2 class="s-title">Proxy Checker <span class="pill warn" id="checkerBadge" style="margin-left:8px">LOCKED</span></h2>
       <button id="guideBtn" class="g-btn mini">Panduan</button>
     </div>
-    <p class="s-desc">Isi <b>host, port,</b> dan lokasi target — ini kunci buat membuat &amp; menguji proxy. Tersimpan khusus akun kamu.</p>
+    <p class="s-desc" id="checkerHint">Masukkan username &amp; password DataImpulse dulu untuk mengaktifkan checker.</p>
 
-    <div class="grid2">
-      <div>
-        <label class="fl" for="pxHost">Host gateway</label>
-        <input id="pxHost" class="g-input mono" value="gw.dataimpulse.com">
+    <div id="checkerBody" style="display:none">
+      <div class="grid2">
+        <div><label class="fl" for="pxHost">Host gateway</label><input id="pxHost" class="g-input mono" value="gw.dataimpulse.com"></div>
+        <div><label class="fl" for="pxPort">Port</label><input id="pxPort" class="g-input mono" value="823"></div>
       </div>
-      <div>
-        <label class="fl" for="pxPort">Port</label>
-        <input id="pxPort" class="g-input mono" value="823">
+
+      <label class="fl" style="margin-top:14px">IP target untuk diuji (satu per baris)</label>
+      <textarea id="checkerIps" class="g-input mono" spellcheck="false" placeholder="103.129.68.37&#10;8.8.8.8"></textarea>
+
+      <div class="opts">
+        <label class="chk on"><input type="checkbox" id="chkAllVariants" checked> Uji semua varian (8)</label>
+        <label class="chk"><input type="checkbox" id="chkRetry"> Retry 2× per varian</label>
       </div>
-    </div>
 
-    <div class="grid3" style="margin-top:14px">
-      <div><label class="fl" for="locCC">Negara (kode)</label><input id="locCC" class="g-input mono" maxlength="2" placeholder="id" style="text-transform:lowercase"></div>
-      <div><label class="fl" for="locAsn">ASN</label><input id="locAsn" class="g-input mono" placeholder="4761"></div>
-      <div><label class="fl" for="locState">Provinsi</label><input id="locState" class="g-input" placeholder="Jawa Tengah"></div>
-      <div><label class="fl" for="locCity">Kota</label><input id="locCity" class="g-input" placeholder="Rembang"></div>
-      <div><label class="fl" for="locZip">ZIP (opsional)</label><input id="locZip" class="g-input mono" placeholder="59211"></div>
-    </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <button id="runCheck" class="g-btn accent">🔍 Cek Proxy Sekarang</button>
+        <button id="stopCheck" class="g-btn stop" style="display:none">⏹ Stop</button>
+        <button id="copyCurl" class="g-btn">Salin cURL</button>
+      </div>
 
-    <div style="display:flex;gap:10px;margin-top:18px;flex-wrap:wrap">
-      <button id="buildProxy" class="g-btn accent">Buat konfigurasi proxy</button>
-      <button id="copyCurl" class="g-btn">Salin cURL</button>
-    </div>
+      <p class="note" style="margin-top:14px">💡 Tiap IP butuh <b>~5–15 detik</b> karena request benar-benar melewati gateway DataImpulse.</p>
 
-    <div id="proxyOut"></div>
+      <div id="checkerResults"></div>
+    </div>
   </section>
 
-  <!-- ============ CEK LOKASI ============ -->
+  <!-- CEK LOKASI -->
   <section class="card">
     <h2 class="s-title" style="margin-bottom:6px">Cek Lokasi IP</h2>
-    <p class="s-desc">Lihat lokasi satu IP dari database geo. Kalau datanya salah, koreksi sendiri di form lalu buat proxy dengan lokasi itu.</p>
+    <p class="s-desc">Lihat lokasi satu IP dari database geo. Kalau datanya salah, koreksi manual di form lalu buat proxy.</p>
     <div style="display:flex;gap:10px;flex-wrap:wrap">
       <input id="checkIp" class="g-input mono" placeholder="contoh: 103.13.204.50" style="flex:1;min-width:180px">
       <button id="checkBtn" class="g-btn accent">Cek Lokasi</button>
@@ -583,124 +267,55 @@ html:not(.dark) .codebox{background:rgba(13,18,38,.04);color:#0e7490}
     <div id="checkOut"></div>
   </section>
 
-  <p class="foot">
-    <span class="grad-text">LIMZXCM</span> · dibuat untuk workflow DataImpulse × SuperProxy<br>
-    Semua proses berjalan di browser kamu.
-  </p>
+  <p class="foot"><span class="grad-text">LIMZXCM</span> · dibuat untuk workflow DataImpulse × SuperProxy<br>Semua proses berjalan di browser &amp; edge function kamu.</p>
 </main>
 
 <div id="toast" class="toast"></div>
 
 <script>
-/* =========================================================
-   HELPERS
-   ========================================================= */
-const $  = (s, r = document) => r.querySelector(s);
-const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
-const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => (
-  { '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]
-));
+const $ = (s, r=document) => r.querySelector(s);
+const $$ = (s, r=document) => Array.from(r.querySelectorAll(s));
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
 let toastTimer;
-function toast(msg, kind) {
-  const el = $('#toast');
-  el.textContent = msg;
-  el.className = 'toast show' + (kind ? ' ' + kind : '');
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => { el.className = 'toast'; }, 2400);
-}
+function toast(msg, kind){ const el=$('#toast'); el.textContent=msg; el.className='toast show'+(kind?' '+kind:''); clearTimeout(toastTimer); toastTimer=setTimeout(()=>el.className='toast',2400); }
 
-async function copyText(text) {
-  try {
-    await navigator.clipboard.writeText(text);
-  } catch (e) {
-    const ta = document.createElement('textarea');
-    ta.value = text;
-    ta.style.position = 'fixed';
-    ta.style.opacity = '0';
-    document.body.appendChild(ta);
-    ta.select();
-    try { document.execCommand('copy'); } catch (_) {}
-    ta.remove();
-  }
+async function copyText(text){
+  try { await navigator.clipboard.writeText(text); }
+  catch(e){ const ta=document.createElement('textarea'); ta.value=text; ta.style.position='fixed'; ta.style.opacity='0'; document.body.appendChild(ta); ta.select(); try{document.execCommand('copy')}catch(_){} ta.remove(); }
   toast('Tersalin ke clipboard ✓');
 }
 
-function download(filename, text, type) {
-  const blob = new Blob([text], { type: type || 'text/plain;charset=utf-8' });
+function download(filename, text, type){
+  const blob = new Blob([text], {type: type || 'text/plain;charset=utf-8'});
   const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = filename;
-  document.body.appendChild(a);
-  a.click();
-  setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500);
+  a.href = URL.createObjectURL(blob); a.download = filename;
+  document.body.appendChild(a); a.click();
+  setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); }, 500);
 }
 
-function debounce(fn, ms) {
-  let t;
-  return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); };
-}
+function debounce(fn, ms){ let t; return (...a)=>{ clearTimeout(t); t=setTimeout(()=>fn(...a), ms); }; }
+function slug(v){ return String(v==null?'':v).toLowerCase().replace(/[^a-z0-9]/g,''); }
+function flagOf(cc){ if(!cc||cc.length!==2) return '🌐'; try { return String.fromCodePoint(...cc.toUpperCase().split('').map(c=>127397+c.charCodeAt(0))); } catch(e){ return '🌐'; } }
+function timeAgo(ts){ const d=Math.floor((Date.now()-ts)/1000); if(d<60) return 'baru saja'; if(d<3600) return Math.floor(d/60)+' menit lalu'; if(d<86400) return Math.floor(d/3600)+' jam lalu'; return new Date(ts).toLocaleDateString('id-ID',{day:'2-digit',month:'short',year:'numeric'}); }
 
-function slug(v) {
-  return String(v == null ? '' : v).toLowerCase().replace(/[^a-z0-9]/g, '');
-}
-
-function flagOf(cc) {
-  if (!cc || cc.length !== 2) return '🌐';
-  try {
-    return String.fromCodePoint(...cc.toUpperCase().split('').map(c => 127397 + c.charCodeAt(0)));
-  } catch (e) { return '🌐'; }
-}
-
-function timeAgo(ts) {
-  const d = Math.floor((Date.now() - ts) / 1000);
-  if (d < 60) return 'baru saja';
-  if (d < 3600) return Math.floor(d / 60) + ' menit lalu';
-  if (d < 86400) return Math.floor(d / 3600) + ' jam lalu';
-  return new Date(ts).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
-}
-
-/* =========================================================
-   THEME
-   ========================================================= */
-(function themeInit() {
-  const btn = $('#themeBtn'), moon = $('#icoMoon'), sun = $('#icoSun');
-  function paint() {
-    const dark = document.documentElement.classList.contains('dark');
-    moon.style.display = dark ? 'none' : 'block';
-    sun.style.display  = dark ? 'block' : 'none';
-    btn.title = dark ? 'Mode terang' : 'Mode gelap';
-  }
-  btn.addEventListener('click', () => {
-    const dark = document.documentElement.classList.toggle('dark');
-    localStorage.setItem('theme', dark ? 'dark' : 'light');
-    paint();
-  });
+/* THEME */
+(function(){ const btn=$('#themeBtn'),m=$('#icoMoon'),s=$('#icoSun');
+  function paint(){ const d=document.documentElement.classList.contains('dark'); m.style.display=d?'none':'block'; s.style.display=d?'block':'none'; }
+  btn.addEventListener('click',()=>{ const d=document.documentElement.classList.toggle('dark'); localStorage.setItem('theme',d?'dark':'light'); paint(); });
   paint();
 })();
 
-/* =========================================================
-   STORAGE
-   ========================================================= */
-const K = { user: 'limzxcm.user', pass: 'limzxcm.pass', hist: 'limzxcm.history' };
-let ACCT = {
-  user: localStorage.getItem(K.user) || '',
-  pass: localStorage.getItem(K.pass) || ''
-};
-let HIST = [];
-try { HIST = JSON.parse(localStorage.getItem(K.hist) || '[]') || []; } catch (e) { HIST = []; }
+/* STORAGE */
+const K = { user:'limzxcm.user', pass:'limzxcm.pass' };
+let ACCT = { user: localStorage.getItem(K.user)||'', pass: localStorage.getItem(K.pass)||'' };
+const baseName = () => (ACCT.user||'').split('__')[0].trim();
 
-const baseName = () => (ACCT.user || '').split('__')[0].trim();
-
-/* =========================================================
-   AKUN
-   ========================================================= */
+/* AKUN */
 const setupCard = $('#setupCard');
-
-function renderAccount(editing) {
+function renderAccount(editing){
   const has = !!ACCT.user;
   const formOpen = !has || editing === true;
-
   $('#acctForm').style.display = formOpen ? 'block' : 'none';
   $('#acctSummary').style.display = (!formOpen && has) ? 'block' : 'none';
   $('#editAcctWrap').style.display = (!formOpen && has) ? 'block' : 'none';
@@ -708,545 +323,419 @@ function renderAccount(editing) {
   $('#acctBadge').textContent = has ? 'TERSIMPAN' : 'BELUM DIATUR';
   $('#acctBadge').className = 'pill' + (has ? '' : ' warn');
   setupCard.classList.toggle('ok', has);
-
-  $('#inpUser').value = ACCT.user;
-  $('#inpPass').value = ACCT.pass;
+  $('#inpUser').value = ACCT.user; $('#inpPass').value = ACCT.pass;
   $('#acctUser').textContent = ACCT.user || '—';
-
-  $('#setupHint').textContent = has
-    ? 'Akun tersimpan di browser ini. Generator siap dipakai.'
-    : 'Tanpa username DataImpulse, generator belum bisa dipakai. Butuh waktu kurang dari satu menit.';
-
-  syncSaveBtn();
+  $('#setupHint').textContent = has ? 'Akun tersimpan. Generator &amp; checker siap dipakai.' : 'Tanpa username DataImpulse, generator &amp; checker belum bisa dipakai.';
+  syncSaveBtn(); renderCheckerState();
 }
-
-function syncSaveBtn() {
-  $('#saveAcct').disabled = $('#inpUser').value.trim() === '';
-}
-
+function syncSaveBtn(){ $('#saveAcct').disabled = $('#inpUser').value.trim()===''; }
 $('#inpUser').addEventListener('input', syncSaveBtn);
-
-$('#saveAcct').addEventListener('click', () => {
-  const u = $('#inpUser').value.trim();
-  const p = $('#inpPass').value;
-  if (!u) { toast('Username belum diisi', 'warn'); return; }
-  ACCT = { user: u, pass: p };
-  localStorage.setItem(K.user, u);
-  localStorage.setItem(K.pass, p);
-  renderAccount(false);
-  toast('Akun disimpan ✓');
+$('#saveAcct').addEventListener('click', ()=>{
+  const u=$('#inpUser').value.trim(), p=$('#inpPass').value;
+  if(!u){ toast('Username belum diisi','warn'); return; }
+  ACCT={user:u,pass:p};
+  localStorage.setItem(K.user,u); localStorage.setItem(K.pass,p);
+  renderAccount(false); toast('Akun disimpan ✓');
 });
-
-$('#editAcct').addEventListener('click', () => renderAccount(true));
-$('#cancelAcct').addEventListener('click', () => renderAccount(false));
-
-$('#logoutBtn').addEventListener('click', () => {
-  if (!confirm('Hapus akun DataImpulse yang tersimpan di browser ini?')) return;
-  localStorage.removeItem(K.user);
-  localStorage.removeItem(K.pass);
-  ACCT = { user: '', pass: '' };
-  renderAccount(true);
-  toast('Akun dihapus');
+$('#editAcct').addEventListener('click', ()=>renderAccount(true));
+$('#cancelAcct').addEventListener('click', ()=>renderAccount(false));
+$('#logoutBtn').addEventListener('click', ()=>{
+  if(!confirm('Hapus akun DataImpulse yang tersimpan?')) return;
+  localStorage.removeItem(K.user); localStorage.removeItem(K.pass);
+  ACCT={user:'',pass:''}; renderAccount(true); toast('Akun dihapus');
 });
-
-/* =========================================================
-   IP PARSING
-   ========================================================= */
-function isIPv4(s) {
-  if (!/^(\d{1,3}\.){3}\d{1,3}$/.test(s)) return false;
-  return s.split('.').every(n => { const v = +n; return v >= 0 && v <= 255 && String(v) === String(+n); });
+function renderCheckerState(){
+  const has = !!ACCT.user;
+  $('#checkerBadge').textContent = has ? 'AKTIF' : 'LOCKED';
+  $('#checkerBadge').className = 'pill ' + (has ? 'act' : 'warn');
+  $('#checkerBody').style.display = has ? 'block' : 'none';
+  $('#checkerHint').innerHTML = has
+    ? 'Kunci akses sudah terpasang ✓ — tempel IP target di bawah, klik Cek Proxy.'
+    : 'Masukkan username &amp; password DataImpulse dulu untuk mengaktifkan checker.';
 }
-function isIPv6(s) {
-  if (!s.includes(':')) return false;
-  if (!/^[0-9a-fA-F:.]+$/.test(s)) return false;
-  return (s.match(/::/g) || []).length <= 1;
-}
-function isIP(s) { return isIPv4(s) || isIPv6(s); }
 
-function parseIPs(text) {
-  const parts = String(text || '')
-    .split(/[\s,;|]+/)
-    .map(s => s.trim())
-    .filter(Boolean);
-
-  const seen = new Set(), out = [], bad = [];
-  for (let p of parts) {
-    p = p.replace(/^[a-z]+:\/\//i, '').replace(/\/.*$/, '');
-    const v4port = p.match(/^(\d{1,3}(?:\.\d{1,3}){3}):\d+$/);
-    if (v4port) p = v4port[1];
-
-    if (!isIP(p)) { bad.push(p); continue; }
-    if (seen.has(p)) continue;
-    seen.add(p);
-    out.push(p);
+/* IP PARSING */
+function isIPv4(s){ if(!/^(\d{1,3}\.){3}\d{1,3}$/.test(s)) return false; return s.split('.').every(n=>{const v=+n; return v>=0&&v<=255&&String(v)===String(+n);}); }
+function isIPv6(s){ if(!s.includes(':')) return false; if(!/^[0-9a-fA-F:.]+$/.test(s)) return false; return (s.match(/::/g)||[]).length<=1; }
+function isIP(s){ return isIPv4(s)||isIPv6(s); }
+function parseIPs(text){
+  const parts = String(text||'').split(/[\s,;|]+/).map(s=>s.trim()).filter(Boolean);
+  const seen=new Set(), out=[], bad=[];
+  for(let p of parts){
+    p = p.replace(/^[a-z]+:\/\//i,'').replace(/\/.*$/,'');
+    const m = p.match(/^(\d{1,3}(?:\.\d{1,3}){3}):\d+$/); if(m) p=m[1];
+    if(!isIP(p)){ bad.push(p); continue; }
+    if(seen.has(p)) continue; seen.add(p); out.push(p);
   }
-  return { out, bad };
+  return {out, bad};
 }
 
-/* =========================================================
-   GEO LOOKUP
-   ========================================================= */
+/* GEO LOOKUP */
 const geoCache = new Map();
-
-async function geoLookup(ip) {
-  if (geoCache.has(ip)) return geoCache.get(ip);
-
-  const job = (async () => {
-    try {
-      const r = await fetch('https://ipwho.is/' + encodeURIComponent(ip));
-      const j = await r.json();
-      if (j && j.success !== false && j.country_code) {
-        return {
-          ok: true,
-          country: (j.country_code || '').toLowerCase(),
-          countryName: j.country || '',
-          region: j.region || '',
-          city: j.city || '',
-          zip: j.postal || '',
-          asn: (j.connection && j.connection.asn) || '',
-          isp: (j.connection && (j.connection.isp || j.connection.org)) || '',
-          source: 'ipwho.is'
-        };
-      }
-    } catch (e) { /* fallback */ }
-
-    try {
-      const r = await fetch('https://ipapi.co/' + encodeURIComponent(ip) + '/json/');
-      const j = await r.json();
-      if (j && !j.error && j.country_code) {
-        return {
-          ok: true,
-          country: (j.country_code || '').toLowerCase(),
-          countryName: j.country_name || '',
-          region: j.region || '',
-          city: j.city || '',
-          zip: j.postal || '',
-          asn: String(j.asn || '').replace(/^AS/i, ''),
-          isp: j.org || '',
-          source: 'ipapi.co'
-        };
-      }
-    } catch (e) { /* gagal total */ }
-
-    return { ok: false, country: '', countryName: '', region: '', city: '', zip: '', asn: '', isp: '', source: '' };
+async function geoLookup(ip){
+  if(geoCache.has(ip)) return geoCache.get(ip);
+  const job = (async()=>{
+    try{
+      const r=await fetch('https://ipwho.is/'+encodeURIComponent(ip));
+      const j=await r.json();
+      if(j&&j.success!==false&&j.country_code) return {
+        ok:true, country:(j.country_code||'').toLowerCase(), countryName:j.country||'',
+        region:j.region||'', city:j.city||'', zip:j.postal||'',
+        asn:(j.connection&&j.connection.asn)||'', isp:(j.connection&&(j.connection.isp||j.connection.org))||'', source:'ipwho.is'
+      };
+    }catch(e){}
+    try{
+      const r=await fetch('https://ipapi.co/'+encodeURIComponent(ip)+'/json/');
+      const j=await r.json();
+      if(j&&!j.error&&j.country_code) return {
+        ok:true, country:(j.country_code||'').toLowerCase(), countryName:j.country_name||'',
+        region:j.region||'', city:j.city||'', zip:j.postal||'',
+        asn:String(j.asn||'').replace(/^AS/i,''), isp:j.org||'', source:'ipapi.co'
+      };
+    }catch(e){}
+    return {ok:false,country:'',countryName:'',region:'',city:'',zip:'',asn:'',isp:'',source:''};
   })();
-
-  geoCache.set(ip, job);
-  return job;
+  geoCache.set(ip, job); return job;
 }
 
-async function pool(items, limit, worker, onProgress) {
-  const results = new Array(items.length);
-  let cursor = 0, done = 0;
-  const n = Math.max(1, Math.min(limit, items.length));
-  const runners = Array.from({ length: n }, async () => {
-    while (true) {
-      const idx = cursor++;
-      if (idx >= items.length) return;
-      results[idx] = await worker(items[idx], idx);
-      done++;
-      if (onProgress) onProgress(done, items.length);
-    }
+async function pool(items, limit, worker, onProgress){
+  const results=new Array(items.length); let cursor=0, done=0;
+  const n=Math.max(1,Math.min(limit,items.length));
+  const runners=Array.from({length:n},async()=>{
+    while(true){ const i=cursor++; if(i>=items.length) return; results[i]=await worker(items[i],i); done++; if(onProgress) onProgress(done,items.length); }
   });
-  await Promise.all(runners);
-  return results;
+  await Promise.all(runners); return results;
 }
 
-/* =========================================================
-   OPSI
-   ========================================================= */
-function getOpts() {
+/* OPSI GENERATOR */
+function getOpts(){
   return {
-    country: $('#optCountry').checked,
-    state:   $('#optState').checked,
-    city:    $('#optCity').checked,
-    zip:     $('#optZip').checked,
-    asn:     $('#optAsn').checked,
-    sess:    $('#optSess').value.trim(),
-    keys: {
-      country: ($('#keyCountry').value.trim() || 'cr').toLowerCase(),
-      state:   ($('#keyState').value.trim()   || 'state').toLowerCase(),
-      city:    ($('#keyCity').value.trim()    || 'city').toLowerCase(),
-      zip:     ($('#keyZip').value.trim()     || 'zip').toLowerCase(),
-      asn:     ($('#keyAsn').value.trim()     || 'asn').toLowerCase(),
-      sess:    'sesstime'
+    country:$('#optCountry').checked, state:$('#optState').checked, city:$('#optCity').checked,
+    zip:$('#optZip').checked, asn:$('#optAsn').checked, sess:$('#optSess').value.trim(),
+    keys:{
+      country:($('#keyCountry').value.trim()||'cr').toLowerCase(),
+      state:($('#keyState').value.trim()||'state').toLowerCase(),
+      city:($('#keyCity').value.trim()||'city').toLowerCase(),
+      zip:($('#keyZip').value.trim()||'zip').toLowerCase(),
+      asn:($('#keyAsn').value.trim()||'asn').toLowerCase(),
+      sess:'sesstime'
     }
   };
 }
-
-function buildUsername(base, geo, o) {
-  let u = base;
-  const add = (key, val) => {
-    const v = slug(val);
-    if (v) u += '__' + key + '.' + v;
-  };
-  if (o.country) add(o.keys.country, geo.country);
-  if (o.state)   add(o.keys.state,   geo.region);
-  if (o.city)    add(o.keys.city,    geo.city);
-  if (o.zip)     add(o.keys.zip,     geo.zip);
-  if (o.asn)     add(o.keys.asn,     geo.asn);
-  if (o.sess)    add(o.keys.sess,    o.sess);
-  return u;
+/* FORMAT BARU: base__k1.v1;k2.v2;k3.v3 */
+function buildUsername(base, geo, o){
+  const parts=[];
+  const add=(k,v)=>{ const s=slug(v); if(s) parts.push(k+'.'+s); };
+  if(o.country) add(o.keys.country, geo.country);
+  if(o.state)   add(o.keys.state,   geo.region);
+  if(o.city)    add(o.keys.city,    geo.city);
+  if(o.zip)     add(o.keys.zip,     geo.zip);
+  if(o.asn)     add(o.keys.asn,     geo.asn);
+  if(o.sess)    add(o.keys.sess,    o.sess);
+  return parts.length ? base+'__'+parts.join(';') : base;
 }
 
-$$('.chk input').forEach(inp => {
-  const paint = () => inp.closest('.chk').classList.toggle('on', inp.checked);
-  inp.addEventListener('change', paint);
-  paint();
-});
+$$('.chk input').forEach(inp=>{ const p=()=>inp.closest('.chk').classList.toggle('on',inp.checked); inp.addEventListener('change',p); p(); });
 
-/* =========================================================
-   GENERATE
-   ========================================================= */
-let genToken = 0;
+/* GENERATE */
+let genToken=0;
+async function runGenerate(){
+  const token=++genToken, res=$('#results'), base=baseName();
+  const {out, bad} = parseIPs($('#ipInput').value);
+  if(!out.length){ res.innerHTML='<p class="muted" style="font-size:13.5px;margin-top:20px">'+(bad.length?esc(bad.length+' baris tidak valid.'):'Belum ada IP valid. Tempel IP di atas untuk mulai.')+'</p>'; return; }
+  if(!base){ toast('Isi username DataImpulse dulu','warn'); setupCard.scrollIntoView({behavior:'smooth',block:'center'}); $('#inpUser').focus(); return; }
+  const opts=getOpts(), fallback=slug($('#fallbackCC').value).slice(0,2);
+  $('#genBtn').disabled=true;
+  res.innerHTML='<p class="muted" style="font-size:13.5px;margin-top:20px"><span class="spinner"></span>Mengambil data lokasi 0/'+out.length+'…</p>';
+  const rows = await pool(out,5, async(ip)=>({ip, geo: await geoLookup(ip)}), (d,t)=>{ if(token!==genToken) return; const el=res.querySelector('p'); if(el) el.innerHTML='<span class="spinner"></span>Mengambil data lokasi '+d+'/'+t+'…'; });
+  if(token!==genToken) return; $('#genBtn').disabled=false;
+  rows.forEach(r=>{ if(!r.geo.country&&fallback){ r.geo.country=fallback; r.geo.countryName=r.geo.countryName||'manual'; } });
+  rows.forEach(r=>{ r.username = buildUsername(base, r.geo, opts); });
+  renderResults(rows, bad);
+}
+function renderResults(rows, bad){
+  const okCount=rows.filter(r=>r.geo.ok).length;
+  const countries=new Set(rows.map(r=>r.geo.country).filter(Boolean));
+  const failed=rows.length-okCount;
+  const lines=rows.map(r=>r.username);
+  const listHTML=rows.map(r=>{
+    const g=r.geo, place=[g.city,g.region,g.countryName].filter(Boolean).join(', ');
+    const meta=[g.asn?'AS'+g.asn:'',g.isp||''].filter(Boolean).join(' · ');
+    return '<div class="rrow" style="display:flex;align-items:center;gap:14px;padding:14px;border-radius:15px;margin-bottom:10px;background:var(--code-bg);border:1px solid var(--border)">'
+      +'<div style="min-width:0;flex:1">'
+      +'<span class="mono" style="font-size:13px;font-weight:800">'+esc(r.ip)+'</span>'
+      +'<span style="font-size:11.5px;color:var(--muted);display:block;margin-top:5px;line-height:1.55">'+flagOf(g.country)+' '+esc(place||'Lokasi tidak diketahui')+(g.ok?'':' <span class="pill warn">GEO GAGAL</span>')+(meta?'<br>'+esc(meta):'')+'</span>'
+      +'<code style="display:block;font-size:12.5px;background:rgba(139,92,246,.09);padding:9px 12px;border-radius:10px;margin-top:8px;word-break:break-all;color:#c4b5fd">'+esc(r.username)+'</code>'
+      +'</div>'
+      +'<button class="g-btn mini" data-copy="'+esc(r.username)+'">Salin</button>'
+      +'</div>';
+  }).join('');
+  $('#results').innerHTML='<div style="display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;padding:14px 16px;margin:6px 0 14px;background:var(--code-bg);border:1px solid var(--border);border-radius:14px">'
+    +'<div style="font-size:12.5px;color:var(--muted);font-weight:600"><b style="color:var(--ink)">'+rows.length+'</b> IP · <b style="color:var(--ink)">'+countries.size+'</b> negara'+(failed?' · <b style="color:var(--ink)">'+failed+'</b> gagal lookup':'')+(bad.length?' · '+bad.length+' dilewati':'')+'</div>'
+    +'<div style="display:flex;gap:8px;flex-wrap:wrap">'
+    +'<button class="g-btn mini" id="copyAll">Salin semua</button>'
+    +'<button class="g-btn mini" id="dlTxt">.txt</button>'
+    +'<button class="g-btn mini" id="dlCsv">.csv</button>'
+    +'</div></div>'
+    +'<div style="max-height:500px;overflow:auto;padding-right:6px">'+listHTML+'</div>';
+  $('#copyAll').addEventListener('click',()=>copyText(lines.join('\n')));
+  $('#dlTxt').addEventListener('click',()=>{ download('limzxcm-usernames-'+Date.now()+'.txt', lines.join('\n')); toast('File .txt diunduh ✓'); });
+  $('#dlCsv').addEventListener('click',()=>{
+    const head='ip,country,country_name,region,city,zip,asn,username';
+    const body=rows.map(r=>{ const g=r.geo; return [r.ip,g.country,g.countryName,g.region,g.city,g.zip,g.asn,r.username].map(v=>'"'+String(v==null?'':v).replace(/"/g,'""')+'"').join(','); }).join('\n');
+    download('limzxcm-usernames-'+Date.now()+'.csv', head+'\n'+body, 'text/csv;charset=utf-8'); toast('File .csv diunduh ✓');
+  });
+}
+document.addEventListener('click', e=>{ const b=e.target.closest('[data-copy]'); if(b) copyText(b.getAttribute('data-copy')); });
 
-async function runGenerate() {
-  const token = ++genToken;
-  const res = $('#results');
+/* VARIAN UNTUK CHECKER */
+const VARIANTS = [
+  { id:'country',   name:'Negara saja',                     params:g=>[['cr',g.country]] },
+  { id:'c-state',   name:'Negara + Provinsi',               params:g=>[['cr',g.country],['state',g.region]] },
+  { id:'c-city',    name:'Negara + Kota',                   params:g=>[['cr',g.country],['city',g.city]] },
+  { id:'c-zip',     name:'Negara + ZIP',                    params:g=>[['cr',g.country],['zip',g.zip]] },
+  { id:'c-asn',     name:'Negara + ASN',                    params:g=>[['cr',g.country],['asn',g.asn]] },
+  { id:'c-s-c',     name:'Negara + Provinsi + Kota',        params:g=>[['cr',g.country],['state',g.region],['city',g.city]] },
+  { id:'full-no-a', name:'Lengkap (tanpa ASN)',             params:g=>[['cr',g.country],['state',g.region],['city',g.city],['zip',g.zip]] },
+  { id:'full',      name:'FULL + ZIP (Region+City+ZIP+ASN)',params:g=>[['cr',g.country],['state',g.region],['city',g.city],['zip',g.zip],['asn',g.asn]] },
+];
+function buildVariants(base, geo, all){
+  const defs = all ? VARIANTS : VARIANTS.slice(0,3);
+  const out=[];
+  for(const d of defs){
+    const params = d.params(geo).filter(([k,v])=>v && String(v).trim());
+    if(!params.length) continue;
+    const parts = params.map(([k,v])=>k+'.'+slug(v));
+    out.push({ id:d.id, name:d.name, username: base+'__'+parts.join(';') });
+  }
+  return out;
+}
+
+/* ============= CHECKER ============= */
+let checkController = null;
+let checkRunning = false;
+
+function rateClass(r){ if(r>=90) return 'g'; if(r>=70) return 'b'; if(r>=40) return 'y'; return 'r'; }
+function rateLabel(r){ if(r>=90) return 'Sempurna'; if(r>=70) return 'Bagus'; if(r>=40) return 'Cukup'; if(r>0) return 'Buruk'; return 'Gagal'; }
+
+async function checkOneVariant(variant, retries){
+  const body = {
+    host: $('#pxHost').value.trim() || 'gw.dataimpulse.com',
+    port: $('#pxPort').value.trim() || '823',
+    pass: ACCT.pass,
+    variants: [{ name: variant.name, username: variant.username }],
+    retries
+  };
+  try {
+    const r = await fetch('/api/check', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body), signal: checkController?.signal });
+    if(!r.ok) return { ...variant, error: 'HTTP '+r.status };
+    const j = await r.json();
+    const res = (j.results && j.results[0]) || {};
+    return { ...variant, ...res };
+  } catch(e){
+    if(e.name === 'AbortError') return { ...variant, aborted: true };
+    return { ...variant, error: e.message || 'Request gagal' };
+  }
+}
+
+async function checkOneIp(ip, allVariants, retries, onStatus){
+  onStatus('geo', ip);
+  const g = await geoLookup(ip);
+  if(!g.ok) return { ip, error: 'Geo lookup gagal — IP tidak bisa di-resolve.' };
   const base = baseName();
+  if(!base) return { ip, error: 'Username DataImpulse kosong.' };
 
-  const { out, bad } = parseIPs($('#ipInput').value);
+  const variants = buildVariants(base, g, allVariants);
+  onStatus('test', ip, 0, variants.length);
 
-  if (!out.length) {
-    res.innerHTML = '<p class="muted" style="font-size:13.5px;margin-top:20px">'
-      + (bad.length ? esc(bad.length + ' baris tidak dikenali sebagai IP.') : 'Belum ada IP valid. Tempel IP di atas untuk mulai.')
-      + '</p>';
-    return;
-  }
+  let completed = 0;
+  const results = await Promise.all(variants.map(async v => {
+    const r = await checkOneVariant(v, retries);
+    completed++;
+    onStatus('test', ip, completed, variants.length);
+    return r;
+  }));
 
-  if (!base) {
-    toast('Isi username DataImpulse dulu', 'warn');
-    setupCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    $('#inpUser').focus();
-    return;
-  }
-
-  const opts = getOpts();
-  const fallback = slug($('#fallbackCC').value).slice(0, 2);
-
-  $('#genBtn').disabled = true;
-  res.innerHTML = '<p class="muted" style="font-size:13.5px;margin-top:20px">'
-    + '<span class="spinner"></span>Mengambil data lokasi 0/' + out.length + '…</p>';
-
-  const rows = await pool(out, 5, async (ip) => {
-    const g = await geoLookup(ip);
-    return { ip, geo: g };
-  }, (d, t) => {
-    if (token !== genToken) return;
-    const el = res.querySelector('p');
-    if (el) el.innerHTML = '<span class="spinner"></span>Mengambil data lokasi ' + d + '/' + t + '…';
+  // urutkan: sukses terbanyak, lalu latency terkecil
+  results.sort((a,b)=>{
+    const ra = a.successRate||0, rb = b.successRate||0;
+    if(rb !== ra) return rb - ra;
+    return (a.avgLatency||0) - (b.avgLatency||0);
   });
 
-  if (token !== genToken) return;
-  $('#genBtn').disabled = false;
+  const totalAttempts = results.reduce((s,r)=> s + (r.total||0), 0);
+  const totalOks = results.reduce((s,r)=> s + (r.okCount||0), 0);
+  const overallRate = totalAttempts ? Math.round((totalOks/totalAttempts)*100) : 0;
+  const bestLatency = results.find(r=>r.okCount>0)?.avgLatency || 0;
 
-  rows.forEach(r => {
-    if (!r.geo.country && fallback) {
-      r.geo.country = fallback;
-      r.geo.countryName = r.geo.countryName || 'manual';
-    }
-  });
-
-  rows.forEach(r => { r.username = buildUsername(base, r.geo, opts); });
-
-  renderResults(rows, bad, opts);
-  pushHistory(rows, base, opts);
+  return { ip, geo: g, variants: results, overallRate, totalAttempts, totalOks, bestLatency };
 }
 
-function renderResults(rows, bad, opts) {
-  const okCount = rows.filter(r => r.geo.ok).length;
-  const countries = new Set(rows.map(r => r.geo.country).filter(Boolean));
-  const failed = rows.length - okCount;
-  const lines = rows.map(r => r.username);
+function renderCheckRow(r){
+  if(r.error){
+    return '<div class="checkrow fail"><div class="cr-head"><div class="cr-ip"><span class="mono">'+esc(r.ip)+'</span></div><div class="cr-badges"><span class="badge fail">GAGAL</span></div></div><div style="font-size:12.5px;color:var(--muted)">'+esc(r.error)+'</div></div>';
+  }
+  const g = r.geo;
+  const best = r.variants.find(v=>v.okCount>0) || r.variants[0];
+  const isWin = r.overallRate >= 70;
+  const rc = rateClass(r.overallRate);
+  const flag = flagOf(g.country);
+  const place = [g.city, g.region, g.countryName].filter(Boolean).join(', ') || '—';
+  const exitInfo = best && best.best ? best.best : null;
 
-  const listHTML = rows.map((r) => {
-    const g = r.geo;
-    const place = [g.city, g.region, g.countryName].filter(Boolean).join(', ');
-    const meta = [
-      g.asn ? 'AS' + g.asn : '',
-      g.isp || ''
-    ].filter(Boolean).join(' · ');
-
-    return ''
-      + '<div class="rrow' + (g.ok ? '' : ' bad') + '">'
-      +   '<div class="info">'
-      +     '<span class="ip mono">' + esc(r.ip) + '</span>'
-      +     '<span class="loc">'
-      +        '<span class="flag">' + flagOf(g.country) + '</span> '
-      +        esc(place || 'Lokasi tidak diketahui')
-      +        (g.ok ? '' : '<span class="pill-inline">GEO GAGAL</span>')
-      +        (meta ? '<br>' + esc(meta) : '')
-      +     '</span>'
-      +     '<code>' + esc(r.username) + '</code>'
-      +   '</div>'
-      +   '<button class="g-btn mini" data-copy="' + esc(r.username) + '">Salin</button>'
-      + '</div>';
+  const attemptsHTML = r.variants.map(v=>{
+    const rc2 = rateClass(v.successRate||0);
+    return '<div class="attempt"><span class="name">'+esc(v.name)+'</span><span style="font-size:10px;color:var(--muted-2);font-family:ui-monospace">'+esc(v.username.split('__')[1]||'-')+'</span><span class="rate '+rc2+'">'+(v.successRate||0)+'%</span></div>';
   }).join('');
 
-  $('#results').innerHTML = ''
-    + '<div class="result-bar">'
-    +   '<div class="stat"><b>' + rows.length + '</b> IP · <b>' + countries.size + '</b> negara'
-    +     (failed ? ' · <b>' + failed + '</b> gagal lookup' : '')
-    +     (bad.length ? ' · ' + bad.length + ' baris dilewati' : '')
-    +   '</div>'
-    +   '<div style="display:flex;gap:8px;flex-wrap:wrap">'
-    +     '<button class="g-btn mini" id="copyAll">Salin semua</button>'
-    +     '<button class="g-btn mini" id="dlTxt">.txt</button>'
-    +     '<button class="g-btn mini" id="dlCsv">.csv</button>'
-    +   '</div>'
-    + '</div>'
-    + '<div class="list">' + listHTML + '</div>';
-
-  $('#copyAll').addEventListener('click', () => copyText(lines.join('\n')));
-
-  $('#dlTxt').addEventListener('click', () => {
-    download('limzxcm-usernames-' + Date.now() + '.txt', lines.join('\n'));
-    toast('File .txt diunduh ✓');
-  });
-
-  $('#dlCsv').addEventListener('click', () => {
-    const head = 'ip,country,country_name,region,city,zip,asn,username';
-    const body = rows.map(r => {
-      const g = r.geo;
-      return [r.ip, g.country, g.countryName, g.region, g.city, g.zip, g.asn, r.username]
-        .map(v => '"' + String(v == null ? '' : v).replace(/"/g, '""') + '"')
-        .join(',');
-    }).join('\n');
-    download('limzxcm-usernames-' + Date.now() + '.csv', head + '\n' + body, 'text/csv;charset=utf-8');
-    toast('File .csv diunduh ✓');
-  });
+  return '<div class="checkrow '+(isWin?'win':'')+'">'
+    +'<div class="cr-head">'
+    +'<div class="cr-ip">'+flag+' <span class="mono">'+esc(r.ip)+'</span> <span class="badge info" style="margin-left:4px">'+esc((g.country||'').toUpperCase())+'</span></div>'
+    +'<div class="cr-badges">'
+    +'<span class="badge '+(isWin?'ok':'warn')+'">'+esc(rateLabel(r.overallRate))+'</span>'
+    +'<span class="rate '+rc+'">'+r.overallRate+'%</span>'
+    +(r.bestLatency ? '<span class="badge info">'+(r.bestLatency/1000).toFixed(1)+' dtk</span>' : '')
+    +'</div></div>'
+    +'<div class="cr-meta">'
+    +'<span><b>'+r.totalOks+'</b>/'+r.totalAttempts+' sukses</span>'
+    +'<span><b>'+r.variants.length+'</b> varian diuji</span>'
+    +'</div>'
+    +'<div class="cr-label">Username terbaik</div>'
+    +'<div class="cr-user"><span>'+esc(best.username)+'</span><button class="g-btn mini" data-copy="'+esc(best.username)+'">Salin</button></div>'
+    +'<div class="cr-label">Target (dari IP)</div>'
+    +'<div class="cr-line">'+flag+' '+esc(place)+' · ZIP '+esc(g.zip||'-')+' · AS'+esc(g.asn||'-')+' '+esc(g.isp||'')+'</div>'
+    +(exitInfo ? '<div class="cr-label">Exit (dari proxy)</div>'
+      + '<div class="cr-line">'+flagOf(exitInfo.geo?.country)+' '+esc(exitInfo.exitIp)+' · '+esc([exitInfo.geo?.city, exitInfo.geo?.region, exitInfo.geo?.country].filter(Boolean).join(', '))+' · ZIP '+esc(exitInfo.geo?.zip||'-')+' · '+esc(exitInfo.geo?.org||'')+'</div>'
+      : '')
+    +'<details class="attempts"><summary>Semua percobaan ('+r.variants.length+')</summary>'+attemptsHTML+'</details>'
+    +'</div>';
 }
 
-document.addEventListener('click', (e) => {
-  const b = e.target.closest('[data-copy]');
-  if (b) copyText(b.getAttribute('data-copy'));
-});
+async function runChecker(){
+  if(checkRunning) return;
+  const base = baseName();
+  if(!base){ toast('Isi username DataImpulse dulu','warn'); setupCard.scrollIntoView({behavior:'smooth',block:'center'}); return; }
 
-/* =========================================================
-   RIWAYAT
-   ========================================================= */
-function pushHistory(rows, base, opts) {
-  HIST.unshift({
-    t: Date.now(),
-    base,
-    count: rows.length,
-    countries: Array.from(new Set(rows.map(r => r.geo.country).filter(Boolean))).length,
-    lines: rows.map(r => r.username)
-  });
-  HIST = HIST.slice(0, 20);
-  try { localStorage.setItem(K.hist, JSON.stringify(HIST)); } catch (e) {}
-  renderHistory();
-}
+  const ips = parseIPs($('#checkerIps').value).out;
+  if(!ips.length){ toast('Masukkan minimal 1 IP','warn'); return; }
 
-function renderHistory() {
-  const box = $('#histBox');
-  if (!HIST.length) {
-    box.innerHTML = '<p class="muted" style="font-size:13.5px">Belum ada riwayat.</p>';
-    return;
-  }
-  box.innerHTML = HIST.map((h, i) => ''
-    + '<div class="hitem">'
-    +   '<div class="info">'
-    +     '<div class="t">' + h.count + ' username · ' + h.countries + ' negara</div>'
-    +     '<div class="m">' + timeAgo(h.t) + ' · <span class="mono">' + esc(h.base) + '</span></div>'
-    +   '</div>'
-    +   '<button class="g-btn mini" data-hcopy="' + i + '">Salin</button>'
-    +   '<button class="g-btn mini" data-hload="' + i + '">Muat</button>'
-    + '</div>'
-  ).join('');
-}
+  const allVariants = $('#chkAllVariants').checked;
+  const retries = $('#chkRetry').checked ? 2 : 1;
 
-$('#histBox').addEventListener('click', (e) => {
-  const c = e.target.closest('[data-hcopy]');
-  if (c) { copyText(HIST[+c.dataset.hcopy].lines.join('\n')); return; }
-  const l = e.target.closest('[data-hload]');
-  if (l) {
-    $('#ipInput').value = HIST[+l.dataset.hload].lines.join('\n');
-    toast('Dimuat ke kotak input ✓');
-    $('#ipInput').scrollIntoView({ behavior: 'smooth', block: 'center' });
-  }
-});
+  checkRunning = true;
+  checkController = new AbortController();
+  $('#runCheck').disabled = true;
+  $('#stopCheck').style.display = 'inline-flex';
 
-$('#clearHist').addEventListener('click', () => {
-  if (!HIST.length) return;
-  if (!confirm('Hapus semua riwayat?')) return;
-  HIST = [];
-  localStorage.removeItem(K.hist);
-  renderHistory();
-  toast('Riwayat dihapus');
-});
+  const container = $('#checkerResults');
+  container.innerHTML = '';
 
-/* =========================================================
-   PROXY BUILDER
-   ========================================================= */
-function currentProxy() {
-  const base = baseName() || 'USERNAME';
-  const o = getOpts();
-  const geo = {
-    country: slug($('#locCC').value).slice(0, 2),
-    region:  $('#locState').value,
-    city:    $('#locCity').value,
-    zip:     $('#locZip').value,
-    asn:     $('#locAsn').value
+  let completed = 0;
+  const total = ips.length;
+
+  const progressEl = document.createElement('div');
+  progressEl.className = 'progress';
+  progressEl.innerHTML = '<div><span class="spinner"></span><span id="progText">Menyiapkan…</span></div><div class="progress-bar"><div class="progress-fill" id="progFill"></div></div>';
+  container.appendChild(progressEl);
+
+  const resultsHost = document.createElement('div');
+  container.appendChild(resultsHost);
+
+  const status = (phase, ip, done, tot) => {
+    const txt = $('#progText'), fill = $('#progFill');
+    if(!txt) return;
+    if(phase === 'geo') txt.innerHTML = 'Lookup lokasi <b class="mono">'+esc(ip)+'</b>…';
+    else txt.innerHTML = 'Uji proxy <b class="mono">'+esc(ip)+'</b> · varian '+done+'/'+tot;
+    if(fill) fill.style.width = Math.round((completed / total) * 100) + '%';
   };
-  let user = base;
-  const add = (k, v) => { const s = slug(v); if (s) user += '__' + k + '.' + s; };
-  if (geo.country) add(o.keys.country, geo.country);
-  if (geo.region)  add(o.keys.state,   geo.region);
-  if (geo.city)    add(o.keys.city,    geo.city);
-  if (geo.zip)     add(o.keys.zip,     geo.zip);
-  if (geo.asn)     add(o.keys.asn,     geo.asn);
-  if (o.sess)      add(o.keys.sess,    o.sess);
 
-  const host = $('#pxHost').value.trim() || 'gw.dataimpulse.com';
-  const port = $('#pxPort').value.trim() || '823';
-  const pass = ACCT.pass || 'PASSWORD';
-
-  return {
-    user, pass, host, port,
-    url: 'http://' + encodeURIComponent(user) + ':' + encodeURIComponent(pass) + '@' + host + ':' + port,
-    curl: 'curl -x "http://' + user + ':' + pass + '@' + host + ':' + port + '" https://ipinfo.io/json'
-  };
+  try {
+    for(const ip of ips){
+      if(!checkRunning) break;
+      const row = await checkOneIp(ip, allVariants, retries, status);
+      if(!checkRunning && row.aborted) break;
+      resultsHost.insertAdjacentHTML('beforeend', renderCheckRow(row));
+      completed++;
+      const fill = $('#progFill'); if(fill) fill.style.width = Math.round((completed/total)*100) + '%';
+      const txt = $('#progText'); if(txt) txt.innerHTML = 'Selesai '+completed+'/'+total;
+    }
+    progressEl.innerHTML = '<div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap"><span>✅ Selesai — '+completed+'/'+total+' IP diuji</span></div>';
+  } catch(e){
+    progressEl.innerHTML = '<div style="color:var(--danger)">⚠ '+esc(e.message||'Terjadi kesalahan')+'</div>';
+  } finally {
+    checkRunning = false;
+    checkController = null;
+    $('#runCheck').disabled = false;
+    $('#stopCheck').style.display = 'none';
+  }
 }
 
-$('#buildProxy').addEventListener('click', () => {
-  if (!baseName()) {
-    toast('Isi username DataImpulse dulu', 'warn');
-    setupCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    return;
-  }
-  const p = currentProxy();
-  $('#proxyOut').innerHTML = ''
-    + '<div class="codebox">'
-    +   '<span class="k">Host</span>' + esc(p.host) + '\n'
-    +   '<span class="k">Port</span>' + esc(p.port) + '\n'
-    +   '<span class="k">Username</span>' + esc(p.user) + '\n'
-    +   '<span class="k">Password</span>' + esc(ACCT.pass ? '••••••••' : '(belum diisi)') + '\n\n'
-    +   '<span class="k">URL</span>' + esc(p.url)
-    + '</div>'
-    + '<div style="display:flex;gap:8px;flex-wrap:wrap">'
-    +   '<button class="g-btn mini" id="copyUrl">Salin proxy URL</button>'
-    +   '<button class="g-btn mini" id="copyUser">Salin username</button>'
-    +   '<button class="g-btn mini" id="copyPass">Salin password</button>'
-    + '</div>'
-    + '<p class="note"><b>Catatan:</b> browser tidak bisa mengarahkan request lewat proxy HTTP secara langsung. '
-    + 'Salin konfigurasi di atas ke tool kamu (curl, Python requests, browser extension, atau aplikasi proxy).</p>';
+$('#runCheck').addEventListener('click', runChecker);
+$('#stopCheck').addEventListener('click', ()=>{ checkRunning = false; checkController?.abort(); toast('Dihentikan'); });
 
-  $('#copyUrl').addEventListener('click',  () => copyText(p.url));
-  $('#copyUser').addEventListener('click', () => copyText(p.user));
-  $('#copyPass').addEventListener('click', () => copyText(ACCT.pass || ''));
-
-  toast('Konfigurasi dibuat ✓');
-});
-
-$('#copyCurl').addEventListener('click', () => {
-  const p = currentProxy();
-  copyText(p.curl);
-});
-
-$('#guideBtn').addEventListener('click', () => {
-  alert(
-    'Panduan singkat\n\n' +
-    '1. Isi username & password DataImpulse di kartu paling atas.\n' +
-    '2. Tempel IP di Generator, tekan Generate.\n' +
-    '3. Tiap IP jadi username: base__cr.<kode-negara>\n' +
-    '   Contoh: 31bafb...__cr.id\n' +
-    '4. Buka Proxy Checker, isi lokasi (negara/kota/provinsi/ASN),\n' +
-    '   tekan "Buat konfigurasi proxy", lalu salin ke tool kamu.\n' +
-    '5. Host: gw.dataimpulse.com · Port HTTP: 823\n\n' +
-    'Parameter targeting yang didukung:\n' +
-    '__cr.<cc>  __state.<provinsi>  __city.<kota>\n' +
-    '__zip.<kode>  __asn.<nomor>  __sesstime.<menit>'
-  );
-});
-
-/* =========================================================
-   CEK LOKASI IP
-   ========================================================= */
-$('#checkBtn').addEventListener('click', async () => {
+/* CEK LOKASI IP */
+$('#checkBtn').addEventListener('click', async ()=>{
   const raw = $('#checkIp').value.trim();
   const { out } = parseIPs(raw);
-  if (!out.length) { toast('Masukkan IP yang valid', 'warn'); return; }
-
+  if(!out.length){ toast('Masukkan IP yang valid','warn'); return; }
   const ip = out[0];
   const box = $('#checkOut');
   box.innerHTML = '<p class="muted" style="font-size:13px;margin-top:14px"><span class="spinner"></span>Mencari lokasi…</p>';
   $('#checkBtn').disabled = true;
-
   const g = await geoLookup(ip);
   $('#checkBtn').disabled = false;
-
-  if (!g.ok) {
-    box.innerHTML = '<p class="note" style="color:var(--danger)">Lokasi untuk <b class="mono">' + esc(ip) + '</b> tidak ditemukan. Isi manual di bawah.</p>';
-    return;
-  }
-
-  $('#locCC').value = g.country || '';
-  $('#locState').value = g.region || '';
-  $('#locCity').value = g.city || '';
-  $('#locZip').value = g.zip || '';
-  $('#locAsn').value = g.asn || '';
-
-  box.innerHTML = ''
-    + '<div class="codebox">'
-    +   '<span class="k">IP</span>' + esc(ip) + '\n'
-    +   '<span class="k">Negara</span>' + flagOf(g.country) + ' ' + esc(g.countryName) + ' (' + esc(g.country) + ')\n'
-    +   '<span class="k">Provinsi</span>' + esc(g.region || '-') + '\n'
-    +   '<span class="k">Kota</span>' + esc(g.city || '-') + '\n'
-    +   '<span class="k">ZIP</span>' + esc(g.zip || '-') + '\n'
-    +   '<span class="k">ASN</span>' + esc(g.asn ? 'AS' + g.asn : '-') + '\n'
-    +   '<span class="k">ISP</span>' + esc(g.isp || '-') + '\n'
-    +   '<span class="k">Sumber</span>' + esc(g.source)
-    + '</div>'
-    + '<p class="note">Nilai di atas sudah diisikan ke form <b>Proxy Checker</b>. '
-    + 'Kalau provinsi/kota tidak cocok, tulis ulang sesuai nama di DataImpulse (misalnya "Jawa Tengah" atau "Central Java").</p>';
-
+  if(!g.ok){ box.innerHTML = '<p class="note" style="color:var(--danger)">Lokasi untuk <b class="mono">'+esc(ip)+'</b> tidak ditemukan.</p>'; return; }
+  box.innerHTML = '<div class="codebox">'
+    +'<span class="k">IP</span>'+esc(ip)+'\n'
+    +'<span class="k">Negara</span>'+flagOf(g.country)+' '+esc(g.countryName)+' ('+esc(g.country)+')\n'
+    +'<span class="k">Provinsi</span>'+esc(g.region||'-')+'\n'
+    +'<span class="k">Kota</span>'+esc(g.city||'-')+'\n'
+    +'<span class="k">ZIP</span>'+esc(g.zip||'-')+'\n'
+    +'<span class="k">ASN</span>'+esc(g.asn?'AS'+g.asn:'-')+'\n'
+    +'<span class="k">ISP</span>'+esc(g.isp||'-')+'\n'
+    +'<span class="k">Sumber</span>'+esc(g.source)
+    +'</div>';
   toast('Lokasi ditemukan ✓');
 });
 
-/* =========================================================
-   TOOLBAR
-   ========================================================= */
+/* TOOLBAR GENERATOR */
 $('#genBtn').addEventListener('click', runGenerate);
-
-$('#clearBtn').addEventListener('click', () => {
-  genToken++;
-  $('#ipInput').value = '';
-  $('#results').innerHTML = '<p class="muted" style="font-size:13.5px;margin-top:20px">Belum ada hasil. Tempel IP di atas untuk mulai.</p>';
-  $('#genBtn').disabled = false;
+$('#clearBtn').addEventListener('click', ()=>{ genToken++; $('#ipInput').value=''; $('#results').innerHTML='<p class="muted" style="font-size:13.5px;margin-top:20px">Belum ada hasil. Tempel IP di atas untuk mulai.</p>'; $('#genBtn').disabled=false; });
+$('#ipInput').addEventListener('input', debounce(()=>{ if($('#autoGen').checked) runGenerate(); }, 750));
+$('#btnMyIp').addEventListener('click', async (e)=>{
+  const btn=e.currentTarget; btn.disabled=true; btn.textContent='Mencari…';
+  try{ const r=await fetch('https://ipwho.is/'); const j=await r.json(); if(j&&j.ip){ const cur=$('#ipInput').value.trim(); $('#ipInput').value = cur ? cur+'\n'+j.ip : j.ip; toast('IP kamu: '+j.ip); if($('#autoGen').checked) runGenerate(); } else toast('Gagal','warn'); }
+  catch(err){ toast('Gagal','warn'); }
+  btn.disabled=false; btn.textContent='+ Pakai IP saya';
 });
 
-$('#ipInput').addEventListener('input', debounce(() => {
-  if ($('#autoGen').checked) runGenerate();
-}, 750));
-
-$('#btnMyIp').addEventListener('click', async (e) => {
-  const btn = e.currentTarget;
-  btn.disabled = true;
-  btn.textContent = 'Mencari…';
-  try {
-    const r = await fetch('https://ipwho.is/');
-    const j = await r.json();
-    if (j && j.ip) {
-      const cur = $('#ipInput').value.trim();
-      $('#ipInput').value = cur ? cur + '\n' + j.ip : j.ip;
-      toast('IP kamu: ' + j.ip);
-      if ($('#autoGen').checked) runGenerate();
-    } else {
-      toast('Gagal mengambil IP', 'warn');
-    }
-  } catch (err) {
-    toast('Gagal mengambil IP', 'warn');
-  }
-  btn.disabled = false;
-  btn.textContent = '+ Pakai IP saya';
+/* cURL */
+$('#copyCurl').addEventListener('click', ()=>{
+  const base = baseName();
+  if(!base){ toast('Isi username dulu','warn'); return; }
+  const host = $('#pxHost').value.trim()||'gw.dataimpulse.com';
+  const port = $('#pxPort').value.trim()||'823';
+  const pass = ACCT.pass||'PASSWORD';
+  const cmd = 'curl -x "http://'+base+'__cr.id:'+pass+'@'+host+':'+port+'" https://ipinfo.io/json';
+  copyText(cmd);
 });
 
-/* =========================================================
-   INIT
-   ========================================================= */
+/* PANDUAN */
+$('#guideBtn').addEventListener('click', ()=>{
+  alert('Panduan\n\n'
+    +'1. Isi username & password DataImpulse di kartu atas.\n'
+    +'2. Di Proxy Checker, tempel IP target (satu per baris).\n'
+    +'3. Klik "Cek Proxy Sekarang".\n'
+    +'4. Tunggu ~5–15 detik per IP — request benar-benar lewat gateway DataImpulse.\n'
+    +'5. Hasil: varian mana yang paling sukses, exit IP, latency.\n\n'
+    +'Varian yang diuji:\n'
+    +'• Negara saja\n• Negara+Provinsi\n• Negara+Kota\n• Negara+ZIP\n• Negara+ASN\n'
+    +'• Negara+Provinsi+Kota\n• Lengkap (tanpa ASN)\n• FULL + ZIP (Region+City+ZIP+ASN)\n\n'
+    +'Format username: base__cr.id;state.eastjava;city.surabaya;zip.60271;asn.135478');
+});
+
+/* INIT */
 renderAccount(false);
-renderHistory();
 </script>
 </body>
   </html>
