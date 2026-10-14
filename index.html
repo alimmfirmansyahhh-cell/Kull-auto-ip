@@ -317,16 +317,46 @@ function parseIPs(text){
   return{out,bad};
 }
 
-/* GEO LOOKUP */
+/* ============ GEO LOOKUP — ipapi.co PRIMARY, ipwho.is FALLBACK ============ */
 const geoCache=new Map();
 async function geoLookup(ip){
   if(geoCache.has(ip))return geoCache.get(ip);
   const job=(async()=>{
-    try{const r=await fetch('https://ipwho.is/'+encodeURIComponent(ip));const j=await r.json();
-      if(j&&j.success!==false&&j.country_code)return{ok:true,country:(j.country_code||'').toLowerCase(),countryName:j.country||'',region:j.region||'',city:j.city||'',zip:j.postal||'',asn:(j.connection&&j.connection.asn)||'',isp:(j.connection&&(j.connection.isp||j.connection.org))||'',source:'ipwho.is'};
+    // 1️⃣ ipapi.co (PRIMARY)
+    try{
+      const r=await fetch('https://ipapi.co/'+encodeURIComponent(ip)+'/json/');
+      const j=await r.json();
+      if(j&&!j.error&&j.country_code&&j.ip){
+        return{
+          ok:true,
+          country:(j.country_code||'').toLowerCase(),
+          countryName:j.country_name||'',
+          region:j.region||'',
+          city:j.city||'',
+          zip:j.postal||'',
+          asn:String(j.asn||'').replace(/^AS/i,''),
+          isp:j.org||'',
+          source:'ipapi.co'
+        };
+      }
     }catch(e){}
-    try{const r=await fetch('https://ipapi.co/'+encodeURIComponent(ip)+'/json/');const j=await r.json();
-      if(j&&!j.error&&j.country_code)return{ok:true,country:(j.country_code||'').toLowerCase(),countryName:j.country_name||'',region:j.region||'',city:j.city||'',zip:j.postal||'',asn:String(j.asn||'').replace(/^AS/i,''),isp:j.org||'',source:'ipapi.co'};
+    // 2️⃣ ipwho.is (FALLBACK)
+    try{
+      const r=await fetch('https://ipwho.is/'+encodeURIComponent(ip));
+      const j=await r.json();
+      if(j&&j.success!==false&&j.country_code){
+        return{
+          ok:true,
+          country:(j.country_code||'').toLowerCase(),
+          countryName:j.country||'',
+          region:j.region||'',
+          city:j.city||'',
+          zip:j.postal||'',
+          asn:(j.connection&&j.connection.asn)||'',
+          isp:(j.connection&&(j.connection.isp||j.connection.org))||'',
+          source:'ipwho.is'
+        };
+      }
     }catch(e){}
     return{ok:false,country:'',countryName:'',region:'',city:'',zip:'',asn:'',isp:'',source:''};
   })();
@@ -400,7 +430,7 @@ function renderResults(rows,bad){
 }
 document.addEventListener('click',e=>{const b=e.target.closest('[data-copy]');if(b)copyText(b.getAttribute('data-copy'));});
 
-/* ============ VARIANTS (urutan dari paling spesifik → paling umum) ============ */
+/* ============ VARIANTS ============ */
 function buildVariants(base, geo){
   const defs = [
     { id:'full-zip',  name:'FULL + ZIP (Region+City+ZIP+ASN)', params:[['cr',geo.country],['state',geo.region],['city',geo.city],['zip',geo.zip],['asn',geo.asn]] },
@@ -536,8 +566,8 @@ function renderCheckRow(r){
   if(!results.length){
     html += '<div class="cr-err">Tidak ada varian yang berhasil.</div>';
   } else {
-    const label = (results.length === 1) ? 'Hasil (' : 'Semua percobaan (' + results.length + ')';
-    html += '<div style="font-size:11px;font-weight:800;color:var(--muted-2);text-transform:uppercase;letter-spacing:.1em;margin:14px 0 8px">' + esc(label) + (results.length === 1 ? '1)' : '') + '</div>';
+    const label = (results.length === 1) ? 'Hasil (1)' : 'Semua percobaan (' + results.length + ')';
+    html += '<div style="font-size:11px;font-weight:800;color:var(--muted-2);text-transform:uppercase;letter-spacing:.1em;margin:14px 0 8px">' + esc(label) + '</div>';
     html += results.map(renderVariantRow).join('');
   }
 
@@ -639,8 +669,14 @@ $('#clearBtn').addEventListener('click', () => { genToken++; $('#ipInput').value
 $('#ipInput').addEventListener('input', debounce(() => { if($('#autoGen').checked) runGenerate(); }, 750));
 $('#btnMyIp').addEventListener('click', async (e) => {
   const btn = e.currentTarget; btn.disabled = true; btn.textContent = 'Mencari…';
-  try { const r = await fetch('https://ipwho.is/'); const j = await r.json(); if(j && j.ip){ const cur = $('#ipInput').value.trim(); $('#ipInput').value = cur ? cur + '\n' + j.ip : j.ip; toast('IP kamu: ' + j.ip); if($('#autoGen').checked) runGenerate(); } else toast('Gagal','warn'); }
-  catch(err){ toast('Gagal','warn'); }
+  try {
+    // pakai ipapi.co untuk dapat IP sendiri
+    let ip = null;
+    try { const r = await fetch('https://ipapi.co/json/'); const j = await r.json(); if(j && j.ip) ip = j.ip; } catch(e){}
+    if(!ip){ try { const r = await fetch('https://ipwho.is/'); const j = await r.json(); if(j && j.ip) ip = j.ip; } catch(e){} }
+    if(ip){ const cur = $('#ipInput').value.trim(); $('#ipInput').value = cur ? cur + '\n' + ip : ip; toast('IP kamu: ' + ip); if($('#autoGen').checked) runGenerate(); }
+    else toast('Gagal','warn');
+  } catch(err){ toast('Gagal','warn'); }
   btn.disabled = false; btn.textContent = '+ Pakai IP saya';
 });
 
@@ -656,12 +692,11 @@ $('#guideBtn').addEventListener('click', () => {
     + 'CASCADE MODE (uncheck Fast):\n'
     + '• Coba FULL+ZIP → FULL → STATE+ASN → CITY+ASN → ASN_ONLY → COUNTRY_ONLY\n'
     + '• Jeda 700ms antar varian (anti 503)\n'
-    + '• Stop begitu match score ≥ 80%\n'
-    + '• COUNTRY_ONLY selalu jadi cadangan terakhir\n\n'
+    + '• Stop begitu match score ≥ 80%\n\n'
     + 'RETRY AGRESIF:\n'
     + '• 4× percobaan pada 503/timeout (jeda 1.5 dtk)\n\n'
-    + 'Skor match:\n'
-    + '• Negara 30% · Provinsi 20% · Kota 20% · ZIP 15% · ASN 15%');
+    + 'Geo lookup: ipapi.co (primary) → ipwho.is (fallback)\n'
+    + 'Proxy test: ipapi.co/json → ipinfo.io (fallback)');
 });
 
 /* INIT */
